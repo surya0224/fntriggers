@@ -1,0 +1,10 @@
+from Competitor_OD_Capacity import get_od_capacity_simple as competitor_capacity
+from Competitor_Capacity_Change_Trigger import compare_capacities as compare_competitor_capacities
+from Competitor_Entry_Exit_Triggers import get_competitors as entry_exit_triggers, get_last_update_dates
+from jupiter_AI import SYSTEM_DATE
+print 'Competitor Capacity'
+competitor_capacity()
+compare_competitor_capacities()
+current_date, last_date = get_last_update_dates()
+entry_exit_triggers(current_date=current_date,last_date=last_date)
+

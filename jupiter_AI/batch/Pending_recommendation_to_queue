@@ -1,0 +1,219 @@
+'''
+Author: Nikunj Agarwal
+Created with <3
+Date: 2017-07-12
+Functionality of code:
+                Gets Pending triggers from Workflow collection for all markets
+                Checks if pending triggers are less than a day older, then calculates recommended values for the market as per latest data.
+                Resends these triggers to the queue. From the queue, processing is the same (like all other triggers).
+                Once trigger has been resent to the queue, deletes individual trigger from workflow collection, since after recommendation, it will be updated again.
+
+'''
+
+import datetime
+import time
+import inspect
+from bson import ObjectId
+from jupiter_AI.triggers.analytics_functions import sending_message
+from jupiter_AI.triggers.analytics_loop import count_update, processing_function
+from jupiter_AI import client, JUPITER_DB, SYSTEM_DATE, JUPITER_LOGGER
+from jupiter_AI.logutils import measure
+from jupiter_AI.common import ClassErrorObject as error_class
+import json
+import pika
+import pymongo
+
+db = client[JUPITER_DB]
+
+
+@measure(JUPITER_LOGGER)
+def get_arg_lists(frame):
+    """
+    function used to get the list of arguments of the function
+    where it is called
+    """
+    args, _, _, values = inspect.getargvalues(frame)
+    argument_name_list = []
+    argument_value_list = []
+    for k in args:
+        argument_name_list.append(k)
+        argument_value_list.append(values[k])
+    return argument_name_list, argument_value_list
+
+
+@measure(JUPITER_LOGGER)
+def get_module_name():
+    return __file__
+
+
+@measure(JUPITER_LOGGER)
+def get_pending_triggers():
+    try:
+        cursor = db.JUP_DB_Workflow.aggregate([
+                        {
+                            '$match' :
+                                {
+                                    'status': 'pending',
+                                    'triggering_event_date' : {'$lte' : datetime.datetime.strftime(datetime.datetime.strptime(SYSTEM_DATE, "%Y-%m-%d") - datetime.timedelta(days = 1), "%Y-%m-%d")}
+                                }
+                        },
+                        {
+                            '$group' :
+                                {
+                                    '_id' :
+                                        {
+                                            'origin' : '$origin',
+                                            'destination' : '$destination',
+                                            'compartment' : '$compartment',
+                                            'pos' : '$pos',
+                                            'dep_date_start' : '$triggering_data.dep_date_start',
+                                            'dep_date_end' : '$triggering_data.dep_date_end'
+                                        },
+                                    'doc' : {'$first' : '$$ROOT'}
+                                }
+                        },
+                        {
+                          '$project' :
+                              {
+                                  '_id' : 0,
+                                  'trigger_id' : '$doc.trigger_id',
+                                  'priority': '$doc.priority'
+                              }
+
+                        },
+                        {
+                            '$lookup' :
+                                {
+                                    'from' : 'JUP_DB_Triggering_Event',
+                                    'localField' : 'trigger_id',
+                                    'foreignField' : 'trigger_id',
+                                    'as' : 'trigger_docs'
+
+                                }
+                        },
+                        {
+                            '$project' :
+                                {
+                                    '_id' : '$trigger_docs._id',
+                                    'priority' : '$priority',
+                                    'trigger_id' : '$trigger_id'
+                                }
+
+                        }
+                    ])
+        cursor_list = list(cursor)
+        print cursor_list
+    except Exception as error_msg:
+        print "an error occured"
+        obj_error = error_class.ErrorObject(error_class.ErrorObject.ERRORLEVEL2,
+                                            'jupter_AI/batch/competitor_analysis/pending_recommendation_to_queue.py method: get_pending_triggers',
+                                            get_arg_lists(inspect.currentframe()))
+        obj_error.append_to_error_list(str(error_msg))
+        print str(error_msg)
+        obj_error.write_error_logs(datetime.datetime.now())
+
+    return cursor_list
+
+
+@measure(JUPITER_LOGGER)
+def main():
+    today = datetime.datetime.today()
+    pending_triggers = get_pending_triggers()
+    for pending_trigger in pending_triggers:
+        print "pending trigger = " , pending_trigger
+        # print "pending_trigger[_id] = " ,ObjectId(pending_trigger['_id'][0])
+        try:
+            temp_trigger_cursor = db.JUP_DB_Triggering_Event.find(
+                {
+                    '_id' : ObjectId(pending_trigger['_id'][0])
+                }
+            )
+            #_id is of the form: [...id....] , i.e a list of one element
+        except:
+            e1 = error_class.ErrorObject(error_class.ErrorObject.ERRORLEVEL1,
+                                         get_module_name(),
+                                         get_arg_lists(inspect.currentframe()))
+            e1.append_to_error_list("Error in retreiving trigger from Triggering Event Collection. Could not create cursor with this ID : %s  " % pending_trigger['_id'])
+            raise e1
+        temp_trigger_cursor_list = list()
+        for doc in temp_trigger_cursor:
+            temp_trigger_cursor_list.append(doc)
+        print str(pending_trigger['_id'][0])
+        if len(temp_trigger_cursor_list) == 0:
+            e1 = error_class.ErrorObject(error_class.ErrorObject.ERRORLEVEL1,
+                                         get_module_name(),
+                                         get_arg_lists(inspect.currentframe()))
+            e1.append_to_error_list("Did not receive any trigger based on this trigger ID from triggering_event collection. Expected one document. Trigger ID needed = %s " % pending_trigger['_id'])
+            raise e1
+
+        if len(temp_trigger_cursor_list) == 1:
+            db.JUP_DB_Triggering_Event.update(
+                {'_id': ObjectId(pending_trigger['_id'][0])},
+                {
+                    're_recommend': True,
+                    'update_time': datetime.datetime.strftime(today, '%H:%M'),
+                    'update_date': datetime.datetime.strftime(today, '%Y-%m-%d'),
+                }
+            )
+        else:
+            print "error"
+            e1 = error_class.ErrorObject(error_class.ErrorObject.WARNING,
+                                         get_module_name(),
+                                         get_arg_lists(inspect.currentframe()))
+            e1.append_to_error_list("Expected one document but received: %s documents " % len(temp_trigger_cursor_list))
+            raise e1
+        try:
+            # db.JUP_DB_Workflow.delete_one(
+            #     {
+            #         'trigger_id' : pending_trigger['trigger_id']
+            #     }
+            # )
+            pass
+        except:
+            e1 = error_class.ErrorObject(error_class.ErrorObject.ERRORLEVEL1,
+                                         get_module_name(),
+                                         get_arg_lists(inspect.currentframe()))
+            e1.append_to_error_list("Could not delete pending trigger from workflow. Either Workflow collection not available or Pending trigger with this ID not present in Workflow : %s " % pending_trigger['_id'])
+            raise e1
+        message = {'_id': str(pending_trigger['_id'][0]),
+                   'priority': pending_trigger['priority']
+                   }
+        print "message = ", message
+
+        try:
+            sending_message(message)
+            print "Message successfully sent"
+        except Exception as error_msg:
+            print "Error"
+            obj_error = error_class.ErrorObject(error_class.ErrorObject.ERRORLEVEL2,
+                                                'jupter_AI/batch/competitor_analysis/pending_recommendation_to_queue.py method: main',
+                                                get_arg_lists(inspect.currentframe()))
+            obj_error.append_to_error_list(str(error_msg))
+            obj_error.write_error_logs(datetime.datetime.now())
+
+
+
+if __name__=='__main__':
+    # parameters = pika.ConnectionParameters(host='localhost')
+    # connection = pika.BlockingConnection(parameters)
+    # channel = connection.channel()
+    st = time.time()
+    main()
+    print "Time taken = ", time.time() - st, " seconds "
+    # message_count = [None] * 10
+    # # count_update()
+    #
+    # # for j in range(9, -1, -1):
+    # #     if message_count[j] != 0:
+    # #         i = j
+    # #         break
+    # i_list = [5,9]
+    # for i in i_list:
+    #     message_received = channel.basic_get(
+    #         queue='Queue' + '%s' % i, no_ack=True)
+    #     print "message_received =    " , message_received
+    #     print "message_received[2] =   ", message_received[2]
+    #     r = json.loads(message_received[2])
+    #     processing_function(message_received)
+    #     # print message_received[2]
+

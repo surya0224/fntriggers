@@ -1,0 +1,1158 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Jupiter Data Validation</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  
+  <!-- <script  src="firstGRID.js"></script> -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+ 
+<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous"> 
+  
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+
+
+<!-- <script type="text/javascript" src="{{ url_for('static', filename='firstGRID.js') }}"></script> -->
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='background.css')}}">
+
+  <!-- <link rel="stylesheet" href="background.css"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
+  <!-- lib for choosing dropdown input field -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.3/css/bootstrap-select.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.3/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.3/js/i18n/defaults-*.min.js"></script>
+	
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+
+
+	<!-- date time picker lib -->
+ 
+ <script src="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
+  
+ <style>
+ .dropdown-toggle {
+	background-color: #a3c2c2;		
+}
+.sub-groups {
+    padding-bottom: 2px;
+    align-items: center;
+    align-content: center;
+}
+
+.Booking div div{
+	height: 25%;
+}
+
+.barp{
+		border-bottom:1px solid #333;
+		padding:5px 0 1px 20px;
+		font-size:13px;
+}
+.navbar {
+  margin-bottom: 0;
+  border-radius: 0;
+  background-color: #424949 !important;
+  border-color:black;
+}
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form{
+		background-color: #424949;
+		 border-color:black;
+	
+}
+
+.form-control-search{
+		background-color: #797979;
+		 border-color:White;
+}
+
+.form-control-search:hover, .form-control-search:focus, .form-control-search:active{
+    outline:none;
+    background: #ffffff;
+	color:black;
+}
+  	
+a{
+	color:white;
+}
+a:active, a:hover{
+	/* color:#e6e6e6; */
+	text-decoration:none;
+}
+	
+<!-- table{ -->
+    <!-- border:1px solid black; -->
+    <!-- margin-top:20px; -->
+  <!-- } -->
+<!-- table > thead > tr > th{ -->
+    <!-- border:1px solid black; -->
+<!-- } -->
+<!-- table > tbody > tr > td{ -->
+    <!-- border:1px solid black; -->
+<!-- } -->
+  
+</style> 
+ <script>
+ 
+  <!-- for date picker -->
+	$(document).ready(function(){
+		var date_input=$('input[name="date"]'); //our date input has the name "date"
+		var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+		date_input.datepicker({
+			format: 'yyyy-mm-dd',
+			container: container,
+			todayHighlight: true,
+			autoclose: true,
+		})
+	})
+
+	
+  $(document).ready(function(){
+    $("#booking_li").click(function(){
+	
+        $("#Booking").show();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+		
+		
+		
+    });
+    $("#sale_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").show();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+    });
+	$("#Flown_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").show();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+    });
+	$("#Flight_Leg_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").show();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+		
+		$("#booking_tbl").hide();
+		
+    });
+	$("#Paxis_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").show();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+    });
+	$("#Target_Leg_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").show();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+    });
+	$("#Forecast_li").click(function(){
+	
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").show();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+    });
+	$("#Target_OD_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").show();
+        $("#InFare").hide();
+    });
+	$("#ATPCO_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").show();
+		$("#Target_OD").hide();
+        $("#InFare").hide();
+    });
+	$("#InFare_li").click(function(){
+		$("#Booking").hide();
+		$("#Sales").hide();
+		$("#Flown").hide();
+		$("#Flight_Leg").hide();
+		$("#Forecast").hide();
+		$("#Paxis").hide();
+		$("#Target_Leg").hide();
+		$("#ATPCO").hide();
+		$("#Target_OD").hide();
+        $("#InFare").show();
+    });
+	
+});
+
+
+<!-- // Load the table on top of the chart -->
+<!-- $(document).ready(function () { -->
+<!-- var d = new Date(); -->
+	<!-- {% for eachResult in user.user %} -->
+	<!-- d = new Date({{ eachResult['Pre_Approval_Date'] }} *1000); -->
+	<!-- $('#tbodyLoad').after( -->
+			   
+	  <!-- +'<tr>' + -->
+			<!-- '<td>' + d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate() + '</td>' + -->
+			<!-- '<td>' + {{ eachResult['Raw_count'] }} + '</td>' + -->
+			<!-- '<td>' + {{ eachResult['Duplicate'] }} + '</td>' + -->
+			<!-- '<td>' + {{ eachResult['No_of_Market'] }} + '</td>' + -->
+			<!-- '<td>' +{{ eachResult['Affected_time'] }}+ '</td>' + -->
+      <!-- '</tr>' + -->
+   <!-- {% endfor %} -->
+   
+<!-- '</table>'); -->
+  
+<!-- }); -->
+var sor = '';
+
+// all chart loading based on the timing
+$(document).ready(function () {
+	
+		     var categories = [],
+                   points = [],
+				   Duplicate = [],
+				   No_of_Market = [],
+				   Affected_time = [];
+			var source ="";
+		   {% for eachResult in user.user %}
+			   var d = new Date({{ eachResult['Pre_Approval_Date'] }} *1000);
+			   // get month and date
+			   //categories.push(d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate());
+			   categories.push(d.getMonth()+"-"+d.getDate());
+			   points.push({{ eachResult['Raw_count'] }});
+			   Duplicate.push({{ eachResult['Duplicate'] }});
+			   No_of_Market.push({{ eachResult['No_of_Market'] }});
+			   Affected_time.push({{ eachResult['Affected_time'] }});
+			   source = {{ eachResult['connector'] }};
+		   {% endfor %}
+		   // print the value in console for checking opt
+			console.log(source);	
+			var _titleText = "Daily basis of raw data row count";
+			sor = source;
+// chart for rows count
+			var options = {
+               chart: {
+                   renderTo: Bookingrows,
+                   type: 'spline',
+				   width: 400,
+					height: 200,
+               },
+               xAxis: {},
+               series: [{}],
+					 title:{
+						text:''
+					},
+					subtitle: {
+						text: 'No of document' // dummy text to reserve space for dynamic subtitle
+					},
+					
+				plotOptions: {
+					spline: {
+						marker: {
+							enabled: true
+						}
+					}
+				},
+           };
+               options.xAxis.categories = categories;
+			options.tooltip = {
+					crosshairs: true,
+					shared: true
+				},	
+			   options.series = [{
+			    name: 'Row counts',
+				 showInLegend: false,  
+				data: points
+			   }
+			   ]
+			    
+				
+// chart for duplicates				
+               var chart = new Highcharts.Chart(options);
+			
+var options = {
+               chart: {
+                   renderTo: Bookingduplicate,
+                   type: 'spline',
+				   width: 400,
+					height: 200,
+               },
+               xAxis: {},
+               series: [{}],
+					title:{
+						text:''
+					},
+					subtitle: {
+						text: 'Duplicates' // dummy text to reserve space for dynamic subtitle
+					},
+					
+				plotOptions: {
+					spline: {
+						marker: {
+							enabled: true
+						}
+					}
+				},
+           };
+               options.xAxis.categories = categories;
+			options.tooltip = {
+					crosshairs: true,
+					shared: true
+				},	
+			   options.series = [{
+				 name: 'Duplicate',
+				  showInLegend: false,  
+				data: Duplicate
+			   }
+			   ]
+			    
+               var chart = new Highcharts.Chart(options);
+			   
+			   
+// chart for Market			   
+			   var options = {
+               chart: {
+                   renderTo: Bookingmarket,
+                   type: 'spline',
+				   width: 400,
+					height: 200,
+               },
+               xAxis: {},
+               series: [{}],
+					title:{
+						text:''
+					},
+					subtitle: {
+						text: 'No of Market' // dummy text to reserve space for dynamic subtitle
+					},
+					
+				plotOptions: {
+					spline: {
+						marker: {
+							enabled: true
+						}
+					}
+				},
+           };
+               options.xAxis.categories = categories;
+			options.tooltip = {
+					crosshairs: true,
+					shared: true
+				},	
+			   options.series = [{
+			    name: 'No of Market',
+				 showInLegend: false,  
+				data: No_of_Market
+			   }			   
+			   ]
+			    
+               var chart = new Highcharts.Chart(options);
+			   
+// chart for affected time
+			   
+			   var options = {
+               chart: {
+                   renderTo: Bookingtime,
+                   type: 'spline',
+				   width: 400,
+					height: 200,
+               },
+               xAxis: {},
+               series: [{}],
+					title:{
+						text:''
+					},
+					subtitle: {
+						text: 'Affected Time' // dummy text to reserve space for dynamic subtitle
+					},
+					
+				plotOptions: {
+					spline: {
+						marker: {
+							enabled: true
+						}
+					}
+				},
+           };
+               options.xAxis.categories = categories;
+			options.tooltip = {
+					crosshairs: true,
+					shared: true
+				},	
+			   options.series = [{
+				 name: 'Affected_time',
+				  showInLegend: false,  
+				data: Affected_time
+			   }
+			   
+			   ]
+			    
+               var chart = new Highcharts.Chart(options);
+			   
+
+			
+       });
+
+	   
+	   
+	// based on pos call the relevent page
+	function completeAndRedirect(form){
+		alert(window.location.pathname);
+		//window.location='/data/Booking
+		location.href=window.location.pathname;
+		//form.action = window.location.pathname;
+		//return window.location.pathname;
+	}
+	
+	
+	 function get_action(form) {
+	 
+		form.method = "POST"
+        form.action = window.location.pathname;
+    
+	}
+	   
+	   
+	// load dynamic table based on each parameters
+	$(document).ready(function () {
+	
+	
+	var source ="";
+		   {% for eachResult in user.user %}
+			   source = {{ eachResult['connector'] }};
+			   console.log( {{ eachResult['connector'] }})
+		   {% endfor %}
+	
+	console.log(source)
+	 var abc = 'static';
+	 
+	if(source == document.getElementById('Booking') || source == document.getElementById('Sales') || source == document.getElementById('Flown')){
+		$("#booking_tbl").show();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('Flight_Leg')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").show();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+		
+		<!-- $("#FlightLeg").hide(); -->
+	}
+	
+	else if(source == document.getElementById('Forecast_od')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").show();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('Forecast')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").show();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('Market')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").show();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('Target_Leg')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").show();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('Target_OD')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").show();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('ATPCO')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").show();
+		$("#InFareDiv").hide();
+	}
+	else if(source == document.getElementById('Infare')){
+		$("#booking_tbl").hide();
+		$("#FlightLegDiv").hide();
+		$("#forecastDiv").hide();
+		$("#targetLegDiv").hide();
+		$("#paxisDiv").hide();
+		$("#targetODDiv").hide();
+		$("#ATPCODiv").hide();
+		$("#InFareDiv").show();
+	}
+	
+	
+	
+	<!-- var dataset = '<table class="table"><thead><tr><th>dep_date</th><th>od</th><th>Flight_num</th><th>compartment</th><th>pax</th></tr></thead><tbody>'; -->
+			
+	<!-- {% for eachResult in user.gridData %} -->
+		<!-- <!-- +'<tr><td>'+{{eachResult["dep_date"]}}+'</td><td>'+{{eachResult["od"]}}+'</td><td>'+{{eachResult["Flight_num"]}}+'</td><td>'+{{eachResult["compartment"]}}+'</td><td>'+{{eachResult["pax"]}}+'</td></tr>'+ --> -->
+		<!-- alert({{eachResult["dep_date"]}})	 -->
+		<!-- var dt =  {{eachResult["od"]}}; -->
+		<!-- alert(dt) -->
+		<!-- <!-- dataset += '<tr><td>'+{{eachResult['od']}};	 --> -->
+		<!-- {% endfor %} -->
+		
+	<!-- dataset += '</tbody></table>'; -->
+		<!-- $('#dynamicTables').append(dataset); -->
+		
+	<!-- <!-- } --> -->
+	
+	<!-- }	 -->
+		
+	});
+  </script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    
+    <div class="collapse navbar-collapse" id="myNavbar">
+      
+	  
+  <!--  
+		<ul class="nav navbar-nav">
+        <li class="active"><a href="#">Flynava Technologies</a></li>
+		<li><a href="#">About</a></li>
+        <li><a href="#">Projects</a></li>
+        <li><a href="#">Contact</a></li>
+		 </ul>
+  -->  
+ 
+      <ul class="nav navbar-nav navbar-left">
+	 
+	  <li ><a href="#" class='text-primary' style = "color:white;font-size:20px;font-family:sans-serif;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);"><b>Jupiter</b></a></li>
+      <li style='padding-top:7px;padding-left:90px'> <input type="text" id='sb' class="form-control-search form-control" size="50" placeholder="Data Validation field" name="searchbar" required>
+		  
+	  </li>
+	  <li ><a href="#" class='text-primary' style = "color:white;font-size:20px;font-family:sans-serif;text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);"><b>Data Validation</b></a></li>		  
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+<div class="container-fluid text-center" style="height:100%;padding-left:0px;padding-right:0px">    
+  <!-- <div class="row content" > -->
+   <!-- <ul class="nav nav-tabs" role="tablist"> -->
+    <!-- <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li> -->
+    <!-- <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li> -->
+    <!-- <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li> -->
+    <!-- <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
+  <!-- </ul> -->
+  <!-- <div class="tab-content"> -->
+    <!-- <div role="tabpanel" class="tab-pane active" id="home">...</div> -->
+    <!-- <div role="tabpanel" class="tab-pane" id="profile">...</div> -->
+    <!-- <div role="tabpanel" class="tab-pane" id="messages">...</div> -->
+    <!-- <div role="tabpanel" class="tab-pane" id="settings">setting</div> -->
+  <!-- </div> -->
+  <div class="col-sm-2" style = "height:100%;padding-left: 0px;background-color: #424949; color:white;border:1px solid #333;">
+    <div class="sidenav text-left " style = 'background-color:#424949;height:67%;color:white;border:1px solid #333;' >
+	
+    <div class='barp' ><p><a href="#" onclick="window.location='/data/Booking';" id = "booking_li">Booking</a></p></div>
+    <div class='barp' ><p><a href="#" onclick="window.location='/data/Sales';" id = "sale_li">Sale</a></p></div>
+    <div class='barp' ><p><a href="#" onclick="window.location='/data/Flown';" id = "Flown_li">Flown</a></p></div>
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/Flight_Leg';" id = "Flight_Leg_li">Flight Leg</a></p>	</div>
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/Forecast_od';" id = "Forecast_li">Forecast</a></p>	</div>
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/Market';" id = "Paxis_li">Paxis</a></p>	</div>
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/Target_Leg';" id = "Target_Leg_li">Target Leg</a></p>	</div>
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/Target_OD';" id = "Target_OD_li">Target OD</a></p></div>	
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/ATPCO';" id = "ATPCO_li">ATPCO</a></p>	</div>
+	<div class='barp' ><p><a href="#" onclick="window.location='/data/InFare';" id = "InFare_li">InFare</a></p></div>
+	
+	</div>
+	<div  class="subgroup" style = "height:33%;padding:0px;background-color:#424949;color:white;font-size:13px;font-family:sans-serif;border:1px solid #333;" >
+	<!-- action = "javascript:completeAndRedirect();" javascript:completeAndRedirect();  onsubmit="get_action(this);"	 -->
+	<form form  onsubmit="get_action(this);" method = "POST">
+	<span style = 'font-size:15px;'>Filter</span>
+	</br>	
+	<div class="sub-groups" style = 'display: -webkit-box;'>
+			<div class = "col-sm-4"><span>Airline</span></div>
+			<div class = "col-sm-8">
+				<div class="input-group">
+				<input class="form-control form-control-search" name="airline" placeholder="FZ" type="text"/>
+			</div>
+			</div >
+	</div>
+	
+	<!-- <div class="sub-groups" style = 'display: -webkit-box;'> -->
+			<!-- <div class = "col-sm-4"><span>POS</span></div> -->
+			<!-- <div class = "col-sm-8"> -->
+				<!-- <select id="lunch" style="width: 70px;" name = 'pos'class="selectpicker form-control form-control-search" data-live-search="true" title="POS"> -->
+					<!-- <option>DXB</option> -->
+					<!-- <option>DOH</option> -->
+					<!-- <option>DMM</option> -->
+					<!-- <option>MAA</option> -->
+					<!-- <option>DEL</option> -->
+			<!-- </select> -->
+			<!-- </div > -->
+	<!-- </div> -->
+	<div class="sub-groups" style = 'display: -webkit-box;'>
+			<div class = "col-sm-4"><span>POS</span></div>
+			<div class = "col-sm-8">
+				<div class="input-group">
+				<input class="form-control form-control-search" name="pos" placeholder="DXB" type="text"/>
+			</div>
+			</div >
+	</div>
+	
+	<div class="sub-groups" style = 'display: -webkit-box;'>
+			<div class = "col-sm-4"><span>OD</span></div>
+			<div class = "col-sm-8">
+				<div class="input-group">
+				<input class="form-control form-control-search" name="od" placeholder="DXBDOH" type="text"/>
+			</div>
+			</div >
+	</div>
+	<div class="sub-groups" style = 'display: -webkit-inline-box;'>
+	<!-- <label class="control-label col-sm-2 requiredField" for="date"> -->
+	<!-- Trx Date -->
+	<!-- </label> -->
+		<div class="col-sm-4"><span>Trx Date</span></div>
+		<div class="col-sm-8">
+			<div class="input-group">
+				<input class="form-control trxdate form-control-search " id="date" name="date" placeholder="YYYY-MM-DD" type="text"/>
+			</div>
+		</div>
+	</div>
+	<div class="sub-groups" style = 'display: -webkit-inline-box;'>
+	<!-- <label class="control-label col-sm-2 requiredField" for="date"> -->
+	<!-- Dep Date -->
+	<!-- </label> -->
+		<div class="col-sm-4"><span>Dep Date</span></div>
+		<div class="col-sm-8">
+			<div class="input-group">
+				<input class="form-control depdate form-control-search" id="date" name="date" placeholder="YYYY-MM-DD" type="text"/>
+			</div>
+		</div>
+	</div>
+	
+	<!-- <button type="button" class="btn btn-primary btn-sm">Search</button> -->
+	<input type = "submit" class="btn btn-primary btn-sm" style = 'padding-top:2px;' value = "Submit" />
+	</form>
+ </div>
+</div> 
+    <div class="col-sm-8 text-left" > 
+	<!-- chart data should present here -->
+	  <div id="container" style="height: 60%; min-width: 310px;overflow:hidden">
+		<div id="Booking">
+		<div class="col-sm-6">
+			<div style="background:#9ff;width:400px;"  id='Bookingrows'></div>
+			<div style="background:#f9f;width:400px;" id='Bookingduplicate'></div>
+		</div>
+		<div class="col-sm-6">
+			<div style="background:#9f9;width:400px;" id='Bookingmarket'></div>
+			<div style="background:#f99;width:400px;" id='Bookingtime'></div>
+		</div>
+		</div>	
+			
+		<div id="Sales" >
+		
+		</div>
+		<div id="Flown" >
+		
+		</div>
+		<div id="Flight_Leg" ></div>
+		<div id="Forecast_od" ></div>
+		<div id="Market" ></div>
+		<div id="Target_Leg" ></div>
+		<div id="Target_OD" ></div>
+		<div id="ATPCO" ></div>
+		<div id="InFare" ></div>
+		<div id='validationTBL' ></div>
+			<!-- <table class="table"  > -->
+				<!-- <thead"> -->
+				  <!-- <tr> -->
+					<!-- <th>Pre_Approval_Date</th> -->
+				    <!-- <th>Row counts</th> -->
+					<!-- <th>Duplicate</th> -->
+					<!-- <th>No of Market</th> -->
+					<!-- <th>Affected_time</th> -->
+				  <!-- </tr> -->
+				<!-- </thead> -->
+				<!-- <tbody id="tbodyLoad"> -->
+				
+				<!-- </tbody> -->
+			  <!-- </table> -->
+		<!-- </div> -->
+	  
+    </div>
+	
+	
+	
+		<div id="table_container" style="height: 200px; overflow:scroll;">
+	<div id = "booking_tbl">
+		<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>book_date</th>
+			<th>dep_date</th>
+			<th>pos</th>
+			<th>origin</th>
+			<th>destination</th>
+			<th>farebasis</th>
+			<th>pax</th>
+			<th>revenue</th>
+			<th>raw_pax</th>
+			<th>raw_revenue</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['book_date'] }}</td>
+			<td>{{ eachResult['dep_date'] }}</td>
+			<td>{{ eachResult['pos'] }}</td>
+			<td>{{ eachResult['origin'] }}</td>
+			<td>{{ eachResult['destination'] }}</td>
+			<td>{{ eachResult['farebasis'] }}</td>
+			<td>{{ eachResult['pax'] }}</td>
+			<td>{{ eachResult['revenue'] }}</td>
+			<td>{{ eachResult['raw_pax'] }}</td>
+			<td>{{ eachResult['raw_revenue'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>
+	</div>
+	
+	<div id = "FlightLegDiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>dep_date</th>
+			<th>Flight_num</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>pax</th>
+			<th>revenue</th>
+			<th>rpkm</th>
+			<th>askm</th>
+			<th>Seat_Factor</th>
+			<th>Yield</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['dep_date'] }}</td>
+			<td>{{ eachResult['Flight_num'] }}</td>
+			<td>{{ eachResult['od'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['pax'] }}</td>
+			<td>{{ eachResult['revenue'] }}</td>
+			<td>{{ eachResult['rpkm'] }}</td>
+			<td>{{ eachResult['askm'] }}</td>
+			<td>{{ eachResult['Seat_Factor'] }}</td>
+			<td>{{ eachResult['Yield'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>
+	</div>
+	
+	
+	<div id = "forecastDiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>departureMonth</th>
+			<th>pos</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>pax</th>
+			<th>revenue</th>
+			<th>avgFare</th>
+			<th>pax_1</th>
+			<th>revenue_1</th>
+			<th>avgFare_1</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['departureMonth'] }}</td>
+			<td>{{ eachResult['pos'] }}</td>
+			<td>{{ eachResult['od'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['pax'] }}</td>
+			<td>{{ eachResult['revenue'] }}</td>
+			<td>{{ eachResult['avgFare'] }}</td>
+			<td>{{ eachResult['pax_1'] }}</td>
+			<td>{{ eachResult['revenue_1'] }}</td>
+			<td>{{ eachResult['avgFare_1'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>
+		
+	</div>
+	
+		
+	<div id = "paxisDiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>year</th>
+			<th>month</th>
+			<th>pos</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>pax</th>
+			<th>revenue</th>
+			<th>market_size</th>
+			<th>share</th>
+			<th>MarketingCarrier1</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['year'] }}</td>
+			<td>{{ eachResult['month'] }}</td>
+			<td>{{ eachResult['pos'] }}</td>
+			<td>{{ eachResult['od'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['pax'] }}</td>
+			<td>{{ eachResult['revenue'] }}</td>
+			<td>{{ eachResult['market_size'] }}</td>
+			<td>{{ eachResult['share'] }}</td>
+			<td>{{ eachResult['MarketingCarrier1'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>
+	</div>
+	
+		
+	<div id = "targetLegDiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>year</th>
+			<th>month</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>pax</th>
+			<th>revenue</th>
+			<th>rpkm</th>
+			<th>askm</th>
+			<th>seat_factor</th>
+			<th>yield</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['year'] }}</td>
+			<td>{{ eachResult['month'] }}</td>
+			<td>{{ eachResult['od'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['pax'] }}</td>
+			<td>{{ eachResult['revenue'] }}</td>
+			<td>{{ eachResult['rpkm'] }}</td>
+			<td>{{ eachResult['askm'] }}</td>
+			<td>{{ eachResult['seat_factor'] }}</td>
+			<td>{{ eachResult['yield'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>	
+	</div>
+	
+	<div id = "targetODDiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>year</th>
+			<th>month</th>
+			<th>pos</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>pax</th>
+			<th>revenue</th>
+			<th>average_fare</th>
+			<th>significant_target</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['year'] }}</td>
+			<td>{{ eachResult['month'] }}</td>
+			<td>{{ eachResult['pos'] }}</td>
+			<td>{{ eachResult['od'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['pax'] }}</td>
+			<td>{{ eachResult['revenue'] }}</td>
+			<td>{{ eachResult['average_fare'] }}</td>
+			
+			<td>{{ eachResult['significant_target'] }}</td>
+			
+			
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>	
+	</div>
+	
+	<div id = "ATPCODiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>carrier</th>
+			<th>effective_from</th>
+			<th>effective_to</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>fare_basis</th>
+			<th>fare_rule</th>
+			<th>tariff_code</th>
+			<th>channel</th>
+			<th>total_fare</th>
+			<th>fare</th>
+			<th>YQ</th>
+			<th>YR</th>
+			<th>currency</th>
+			<th>fare_id</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['carrier'] }}</td>
+			<td>{{ eachResult['effective_from'] }}</td>
+			<td>{{ eachResult['effective_to'] }}</td>
+			<td>{{ eachResult['OD'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['fare_basis'] }}</td>
+			<td>{{ eachResult['fare_rule'] }}</td>
+			<td>{{ eachResult['tariff_code'] }}</td>
+			<td>{{ eachResult['channel'] }}</td>
+			<td>{{ eachResult['total_fare'] }}</td>
+			<td>{{ eachResult['fare'] }}</td>
+			<td>{{ eachResult['YQ'] }}</td>
+			<td>{{ eachResult['YR'] }}</td>
+			<td>{{ eachResult['currency'] }}</td>
+			<td>{{ eachResult['fare_id'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>	
+	</div>
+	
+	<div id = "InFareDiv">
+	<table class="pure-table pure-table-bordered" >
+		<thead>
+		  <tr>
+			<th>carrier</th>
+			<th>observation_date</th>
+			<th>observation_time</th>
+			<th>pos</th>
+			<th>od</th>
+			<th>compartment</th>
+			<th>price_exc</th>
+			<th>price_inc</th>
+			<th>tax</th>
+			<th>currency</th>
+			<th>outbound_flight_no</th>
+			<th>inbound_flight_no</th>
+		  </tr>
+		</thead>
+		<tbody>
+		{% for eachResult in user.gridData %}
+		  <tr>
+			<td>{{ eachResult['carrier'] }}</td>
+			<td>{{ eachResult['observation_date'] }}</td>
+			<td>{{ eachResult['observation_time'] }}</td>
+			<td>{{ eachResult['pos'] }}</td>
+			<td>{{ eachResult['od'] }}</td>
+			<td>{{ eachResult['compartment'] }}</td>
+			<td>{{ eachResult['price_exc'] }}</td>
+			<td>{{ eachResult['price_inc'] }}</td>
+			<td>{{ eachResult['tax'] }}</td>
+			<td>{{ eachResult['currency'] }}</td>
+			<td>{{ eachResult['outbound_flight_no'] }}</td>
+			<td>{{ eachResult['inbound_flight_no'] }}</td>
+		  </tr>
+		  {% endfor %}
+		</tbody>
+	  </table>	
+	</div>
+	</div>
+	
+  </div>
+    <div class="col-sm-2 sidenav2" style = "height:100%;background-color: white;">
+      <!-- <div class="well"> -->
+        <!-- <p>Suggestion-1</p> -->
+      <!-- </div> -->
+      
+	  <div class="table-responsive well"> 
+	<p>fzDB stats</p>	
+	  <table class="table">
+		
+		<tbody>
+		  <tr>
+		  <th>Collections</th>
+			<td>217</td>
+			</tr>
+			<tr>
+			<th>Data</th>
+			<td>48 GB</td>
+			</tr>
+			<tr>
+			<th>Storage</th>
+			<td>9 GB</td>
+			</tr>
+			<tr>
+			<th>Index</th>
+			<td>1 GB</td>
+		  </tr>
+		</tbody>
+	  </table>
+	  </div>
+	  <div class="table-responsive well"> 
+	<p>rawData stats</p>	
+	  <table class="table">
+	  <tbody>
+		  <tr>
+		  <th>Collections</th>
+			<td>22</td>
+			</tr>
+			<tr>
+			<th>Data</th>
+			<td>76 GB</td>
+			</tr>
+			<tr>
+			<th>Storage</th>
+			<td>16 GB</td>
+			</tr>
+			<tr>
+			<th>Index</th>
+			<td>.6 GB</td>
+		  </tr>
+		</tbody>
+		
+	  </table>
+	  </div>
+    </div>
+	
+  </div>
+<!-- <footer class="container-fluid text-center"> -->
+  <!-- <p>Data Team - Flynava Technologies</p> -->
+  
+<!-- </footer> -->
+
+</body>
+</html>
+
+

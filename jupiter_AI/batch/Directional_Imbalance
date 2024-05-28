@@ -1,0 +1,365 @@
+"""
+Author: Tulsi Choudhary
+Created with <3
+Date Created: 2018-08-20
+File Name: case_3.py
+
+Checks if a market is directionally imbalance or not.
+
+"""
+from jupiter_AI.triggers.common import cursor_to_df
+from pandas import DataFrame
+import operator
+from jupiter_AI import SYSTEM_DATE, mongo_client, JUPITER_DB, JUPITER_LOGGER
+
+
+operator_dict = {
+    '>=': operator.ge,
+    '<=': operator.le,
+    '>': operator.gt,
+    '<': operator.lt,
+    'and': operator.and_,
+}
+
+
+def get_seat_factor_f(origin, destination, start_date, end_date, compartment, db):
+    curl_1 = db.JUP_DB_Market_Characteristics_Flights.aggregate([
+        {
+            '$match': {
+                'origin': origin,
+                'destination': destination,
+                'dep_date': {'$gte': start_date, '$lte': end_date},
+                'compartment': compartment
+            }
+        },
+        {
+            '$sort': {'snap_date': -1}
+        },
+        {
+            '$group': {
+                '_id': {
+                    'origin': '$origin',
+                    'destination': '$destination',
+                    'compartment': '$compartment',
+                    'dep_date': '$dep_date',
+                    'flight_number': '$flight_number'
+                },
+                'bookings': {'$first': '$bookings'},
+                'capacity': {'$first': '$capacity'},
+                'forecast': {'$first': '$pax_forecast'},
+                'flown': {'$first': '$pax'}
+            }
+        },
+        {
+            '$group': {
+                '_id': {
+                    'origin': '$_id.origin',
+                    'destination': '$_id.destination',
+                    'compartment': '$_id.compartment'
+                },
+                'bookings': {'$sum': '$bookings'},
+                'capacity': {'$sum': '$capacity'},
+                'forecast': {'$sum': '$forecast'},
+                'flown': {'$sum': '$flown'},
+                'dep_date_start': {'$min': '$_id.dep_date'},
+                'dep_date_end': {'$max': '$_id.dep_date'}
+            }
+        },
+        {
+            '$project': {
+                'origin': '$_id.origin',
+                'destination': '$_id.destination',
+                'compartment': '$_id.compartment',
+                'bookings': 1,
+                'flown': 1,
+                'capacity': 1,
+                'forecast': 1,
+                '_id': 0,
+                'dep_date_start': 1,
+                'dep_date_end': 1,
+                'forecast_seat_factor': {
+                    '$cond': [{'$ne': ['$capacity', 0]},
+                              {'$divide': [{
+                                  '$multiply': ['$forecast', 100]
+                              }, '$capacity']},
+                              'NA'
+                              ]
+                },
+                'flown_seat_factor': {
+                    '$cond': [{'$ne': ['$capacity', 0]},
+                              {'$divide': [{
+                                  '$multiply': ['$flown', 100]
+                              }, '$capacity']},
+                              'NA'
+                              ]
+                },
+                'booked_seat_factor': {
+                    '$cond': [{'$ne': ['$capacity', 0]},
+                              {'$divide': [{
+                                  '$multiply': ['$bookings', 100]
+                              }, '$capacity']},
+                              'NA'
+                              ]
+                }
+            }
+        }
+    ])
+    df1 = cursor_to_df(list(curl_1))
+    return df1
+
+
+def get_seat_factor_b(origin, destination, start_date, end_date, compartment, db):
+    curl_2 = db.JUP_DB_Market_Characteristics_Flights.aggregate([
+        {
+            '$match': {
+                'origin': destination,
+                'destination': origin,
+                'compartment': compartment,
+                'dep_date': {'$gte': start_date, '$lte': end_date}
+            }
+        },
+        {
+            '$sort': {'snap_date': -1}
+        },
+        {
+            '$group': {
+                '_id': {
+                    'origin': '$origin',
+                    'destination': '$destination',
+                    'compartment': '$compartment',
+                    'dep_date': '$dep_date',
+                    'flight_number': '$flight_number'
+                },
+                'bookings': {'$first': '$bookings'},
+                'capacity': {'$first': '$capacity'},
+                'forecast': {'$first': '$pax_forecast'},
+                'flown': {'$first': '$pax'}
+            }
+        },
+        {
+            '$group': {
+                '_id': {
+                    'origin': '$_id.origin',
+                    'destination': '$_id.destination',
+                    'compartment': '$_id.compartment'
+                },
+                'bookings': {'$sum': '$bookings'},
+                'capacity': {'$sum': '$capacity'},
+                'forecast': {'$sum': '$forecast'},
+                'flown': {'$sum': '$flown'},
+                'dep_date_start': {'$min': '$_id.dep_date'},
+                'dep_date_end': {'$max': '$_id.dep_date'}
+            }
+        },
+        {
+            '$project': {
+                'origin': '$_id.origin',
+                'destination': '$_id.destination',
+                'compartment': '$_id.compartment',
+                'bookings': 1,
+                'flown': 1,
+                'capacity': 1,
+                'forecast': 1,
+                '_id': 0,
+                'dep_date_start': 1,
+                'dep_date_end': 1,
+                'forecast_seat_factor': {
+                    '$cond': [{'$ne': ['$capacity', 0]},
+                              {'$divide': [{
+                                  '$multiply': ['$forecast', 100]
+                              }, '$capacity']},
+                              'NA'
+                              ]
+                },
+                'flown_seat_factor': {
+                    '$cond': [{'$ne': ['$capacity', 0]},
+                              {'$divide': [{
+                                  '$multiply': ['$flown', 100]
+                              }, '$capacity']},
+                              'NA'
+                              ]
+                },
+                'booked_seat_factor': {
+                    '$cond': [{'$ne': ['$capacity', 0]},
+                              {'$divide': [{
+                                  '$multiply': ['$bookings', 100]
+                              }, '$capacity']},
+                              'NA'
+                              ]
+                }
+            }
+        }
+    ])
+    df2 = cursor_to_df(list(curl_2))
+    return df2
+
+
+def get_operator(operator_f, df_f, seat_factor_f, sf_threshold_f, operator_b, df_b, seat_factor_b, sf_threshold_b, operator_d, sf_threshold_diff, operator_c):
+    if operator_dict[operator_f](df_f[seat_factor_f], sf_threshold_f):
+        a = 1
+    else:
+        a = 0
+    if operator_dict[operator_b](df_b[seat_factor_b], sf_threshold_b):
+        b = 1
+    else:
+        b = 0
+    sf_diff = df_f[seat_factor_f] - df_b[seat_factor_b]
+
+    if operator_dict[operator_d](sf_diff, sf_threshold_diff):
+        c = 1
+    else:
+        c = 0
+    if operator_dict[operator_c](operator_dict[operator_c](a, b), c):
+        return '1'
+    else:
+        return '0'
+
+
+def get_di_market(client):
+    db = client[JUPITER_DB]
+    print 'getting user define values'
+    curr = db.JUP_DB_DI_Users.find()
+    origin = curr['origin']['value']
+    destination = curr['destination']['value']
+    compartment = curr['compartment']['value']
+    start_date = curr['effective_date_from']
+    end_date = curr['effective_date_to']
+    seat_factor_f = curr['seat_factor']['foreword']
+    sf_threshold_f = curr['seat_factor_threshold_f']['value']
+    seat_factor_b = curr['seat_factor']['backword']
+    seat_factor_check = curr['seat_factor']['check']
+    sf_threshold_b = curr['seat_factor_threshold_b']['value']
+    sf_threshold_diff = curr['seat_factor_threshold_d']['value']
+    operator_f = curr['operator_foreword']['value']
+    operator_b = curr['operator_backword']['value']
+    operator_d = curr['operator_diff']['value']
+    operator_c = curr['operator_c']['value']
+    operator_check = curr['operator_check']['value']
+    sf_threshold_check = curr['seat_factor_threshold_check']['value']
+    df_f = get_seat_factor_f(origin, destination, start_date, end_date, compartment, db=db)
+    df_b = get_seat_factor_b(origin, destination, start_date, end_date, compartment, db=db)
+
+    result = get_operator(operator_f, df_f, seat_factor_f, sf_threshold_f, operator_b, df_b, seat_factor_b, sf_threshold_b, operator_d, sf_threshold_diff, operator_c)
+
+    if result == 1:
+        print'There is a directional imbalance'
+        db.JUP_DB_DI_Markets.update(
+            {'case': 3},
+            {'Di_market': origin+destination}
+        )
+        ods = db.JUP_DB_Market_Significance.distinct("od")
+        d_od = DataFrame(list(ods), columns=['OD'])
+        d_od['origin'] = d_od['OD'].str[:3]
+        d_od['destination'] = d_od['OD'].str[3:]
+        arr = list()
+        for index, row in d_od.iterrows():
+            # print index
+            if (row['origin'] == destination) and (row['destination'] != origin):
+                # print row['OD']
+                arr.append(row['destination'])
+
+        curl_3 = db.JUP_DB_Market_Characteristics_Flights.aggregate([
+            {
+                '$match': {
+                    'origin': origin,
+                    'compartment': compartment,
+                    'dep_date': {'$gte': start_date, '$lte': end_date}
+                }
+            },
+            {
+                '$sort': {'snap_date': -1}
+            },
+            {
+                '$group': {
+                    '_id': {
+                        'origin': '$origin',
+                        'destination': '$destination',
+                        'compartment': '$compartment',
+                        'dep_date': '$dep_date',
+                        'flight_number': '$flight_number'
+                    },
+                    'bookings': {'$first': '$bookings'},
+                    'capacity': {'$first': '$capacity'},
+                    'forecast': {'$first': '$pax_forecast'},
+                    'flown': {'$first': '$pax'}
+                }
+            },
+            {
+                '$group': {
+                    '_id': {
+                        'origin': '$_id.origin',
+                        'destination': '$_id.destination',
+                        'compartment': '$_id.compartment'
+                    },
+                    'bookings': {'$sum': '$bookings'},
+                    'capacity': {'$sum': '$capacity'},
+                    'forecast': {'$sum': '$forecast'},
+                    'flown': {'$sum': '$flown'},
+                    'dep_date_start': {'$min': '$_id.dep_date'},
+                    'dep_date_end': {'$max': '$_id.dep_date'}
+                }
+            },
+            {
+                '$project': {
+                    'origin': '$_id.origin',
+                    'destination': '$_id.destination',
+                    'compartment': '$_id.compartment',
+                    'bookings': 1,
+                    'flown': 1,
+                    'capacity': 1,
+                    'forecast': 1,
+                    '_id': 0,
+                    'dep_date_start': 1,
+                    'dep_date_end': 1,
+                    'forecast_seat_factor': {
+                        '$cond': [{'$ne': ['$capacity', 0]},
+                                  {'$divide': [{
+                                      '$multiply': ['$forecast', 100]
+                                  }, '$capacity']},
+                                  'NA'
+                                  ]
+                    },
+                    'flown_seat_factor': {
+                        '$cond': [{'$ne': ['$capacity', 0]},
+                                  {'$divide': [{
+                                      '$multiply': ['$flown', 100]
+                                  }, '$capacity']},
+                                  'NA'
+                                  ]
+                    },
+                    'booked_seat_factor': {
+                        '$cond': [{'$ne': ['$capacity', 0]},
+                                  {'$divide': [{
+                                      '$multiply': ['$bookings', 100]
+                                  }, '$capacity']},
+                                  'NA'
+                                  ]
+                    }
+                }
+            }
+        ])
+        df3 = cursor_to_df(list(curl_3))
+        df4 = DataFrame(arr, columns=['destination'])
+        df5 = df3.merge(df4, on='destination')
+        df5[destination+origin] = df_b[seat_factor_b]
+        df5['max'] = df5[[destination+origin, seat_factor_check]].max(axis=1)
+        markets = []
+        for index, row in df5.iterrows():
+            if operator_dict[operator_check](row['max'], sf_threshold_check):
+                markets.append(row['origin'] + row['destination'])
+        db.JUP_DB_DI_Markets.update(
+            {'case': 3},
+            {'Check_Markets': markets}
+        )
+
+    else:
+        print 'There is not a directional Imbalance'
+
+
+if __name__ == '__main__':
+    client = mongo_client()
+    get_di_market(client)
+    client.close()
+
+
+

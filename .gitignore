@@ -1,0 +1,26 @@
+/env
+*.pyc
+/.idea
+/dummy
+EKW Schedules 121015c.pdf
+Untitled Document
+code.py
+dummy.py
+dummy_1.py
+pos_od_compartment.js
+product_rating.py
+schedule.py
+trigger_listening.py
+triggers_test.py
+dummy6.py
+credentials.txt
+jupiter_AI.zip
+jupiter_AI_backend.zip
+CGI/
+jupiter_AI_backend/.crossbar/node.pid
+jupiter_AI_backend/web
+/jupiter_AI/common/ClassErrorObject.py
+.DS_Store
+#jupiter_AI/common/network_level_params.py
+/.gitconfig
+#jupiter_AI/tiles/workflow/

@@ -1,0 +1,104 @@
+ /* Remove the navbar's default margin-bottom and rounded borders */ 
+    .navbar {
+      margin-bottom: 0;
+      border-radius: 0;
+	  background-color: #424949 !important;
+	  border-color:black;
+    }
+    .navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form{
+		    background-color: #424949;
+			 border-color:black;
+		
+	}
+    /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+    .row.content {height: 550px}
+    
+	
+    /* Set gray background color and 100% height */
+    .sidenav {
+	  color:white;
+	  font-size:14px;
+	  font-family:'Comfortaa',cursive;
+	  border:1px solid #5c8a8a;
+	  background-color: #424949;
+    }
+	
+
+	/* submit form */
+	.subgroup{
+	  color:white;
+	  font-size:14px;
+	  font-family:'Comfortaa',cursive;
+	  border:1px solid #5c8a8a;
+	  background-color: #424949;
+	}
+	
+	/* Second side nevigation*/
+	.sidenav2{
+	  border:1px solid #5c8a8a;
+	  
+	}
+	/* for POS div */
+	.filter-heading {
+		font-size: 12px;
+		line-height: 30px;
+		float: left;
+		width: 60px;
+	}
+	#lunch {
+		width: 75px;
+	}
+	
+	/* Set color for navigation link */
+	a{
+		color:white;
+	}
+	a:active, a:hover{
+		/* color:#e6e6e6; */
+		text-decoration:none;
+	}
+	.barp{
+		border-bottom:1px solid #333;
+		padding:5px 0 1px 20px;
+		font-size:13px;
+	}
+	
+	/* Set relevant color for the search bar */
+	.form-control{
+	border-radius:11px;
+	background-color: #424949;
+	color:white;
+	border:none;
+	}
+    
+    /* Set black background color, white text and some padding */
+    footer {
+      background-color: #a3c2c2;
+      color: black;
+      padding: 15px;
+	  border-top:1px solid #5c8a8a;
+    }
+	
+
+    /* On small screens, set height to 'auto' for sidenav and grid */
+    
+      .row.content {height:auto;} 
+    }
+	
+	.dropdown-toggle {
+		 background-color: #a3c2c2;
+		
+	}
+	
+	 .dropdown-toggle {
+	background-color: #a3c2c2;		
+}
+.sub-groups {
+    padding-bottom: 2px;
+    align-items: center;
+    align-content: center;
+}
+
+.Booking div div{
+	height: 25%;
+}
