@@ -528,7 +528,6 @@ def create_temp_fares_collection(client, od):
     num=1
     Bulk = db.temp_fares_triggers.initialize_ordered_bulk_op()
     for x in cursor:
-        print x
         try:
             Bulk.insert(x)
             if num%1000 == 0:
@@ -725,41 +724,17 @@ def get_fares_ods_list(db):
 if __name__ == "__main__":
     client = mongo_client()
     db = client[JUPITER_DB]
-    # from jupiter_AI.batch.atpco_automation.Automation_tasks import run_temp_fares_collection
+    from jupiter_AI.batch.atpco_automation.Automation_tasks import run_temp_fares_collection
 
 
-    # ods = get_fares_ods_list(db=db)
+    ods = get_fares_ods_list(db=db)
     temp_fares = list()
     num_markets = 100
     counter = 0
-    # while counter < len(ods):
-    print("OD's List")
-    create_temp_fares_collection(client, od=[
-        "DELYVR",
-"DELYOW",
-"DELYYC",
-"DELYTO",
-"DELTPE",
-"DELSAL",
-"DELJED",
-"DELBOG",
-"DELYHZ",
-"DELYMQ",
-"DELWAS",
-"DELYYZ",
-"DELMNL",
-"DELEWR",
-"DELSFO",
-"DELJFK",
-"DELJKT",
-"DELTYO",
-"DELCHI",
-"DELKUL"
-]
-)
-        # temp_fares.append(run_temp_fares_collection.s(od=ods[counter:counter+num_markets]))
-        # counter = counter + num_markets
-    # group_8 = group(temp_fares)
-    # res8 = group_8()
+    while counter < len(ods):
+        temp_fares.append(run_temp_fares_collection.s(od=ods[counter:counter+num_markets]))
+        counter = counter + num_markets
+    group_8 = group(temp_fares)
+    res8 = group_8()
     #create_temp_fares_collection(client)
     client.close()

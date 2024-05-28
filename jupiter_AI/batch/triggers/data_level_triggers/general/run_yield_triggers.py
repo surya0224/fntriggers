@@ -404,53 +404,33 @@ def run(db, markets, sig_flag=None):
 if __name__ == '__main__':
     client =mongo_client()
     db=client[JUPITER_DB]
-    run(markets=[
-
-      "DELDELBOGJ",
-        "DELDELBOGY",
-        "DELDELCHIJ",
-        "DELDELCHIY",
-        "DELDELEWRJ",
-        "DELDELEWRY",
-        "DELDELJEDJ",
-        "DELDELJEDY",
-        "DELDELJFKJ",
-        "DELDELJFKY",
-        "DELDELJKTJ",
-        "DELDELJKTY",
-        "DELDELKULJ",
-        "DELDELKULY",
-        "DELDELMNLJ",
-        "DELDELMNLY",
-        "DELDELSALJ",
-        "DELDELSALY",
-        "DELDELSFOJ",
-        "DELDELSFOY",
-        "DELDELTPEJ",
-        "DELDELTPEY",
-        "DELDELTYOJ",
-        "DELDELTYOY",
-        "DELDELWASJ",
-        "DELDELWASY",
-        "DELDELYHZJ",
-        "DELDELYHZY",
-        "DELDELYMQJ",
-        "DELDELYMQY",
-        "DELDELYOWJ",
-        "DELDELYOWY",
-        "DELDELYTOJ",
-        "DELDELYTOY",
-        "DELDELYVRJ",
-        "DELDELYVRY",
-        "DELDELYYCJ",
-        "DELDELYYCY",
-        "DELDELYYZJ",
-        "DELDELYYZY"
-
-
-]
-, db=db, sig_flag='sig')
+    run(markets=['UAEDXBKRTY'], sig_flag='sig', db=db)
     import sys
     client.close()
     sys.exit()
     # TEMPORARY BLOCK TO CLEAR WORKFLOW AND WORKFLOW_OD_USER
+    st = time.time()
+    print "Running Data Level Triggers"
+    online_mrkts = db.JUP_DB_Market_Significance.aggregate([
+        {"$match": {"online": True}},
+        {"$sort": {"rank": -1}},
+        {"$group": {"_id": {"market": "$market"}}},
+        {"$project": {"_id": 0, "market": "$_id.market"}}])
+
+    online_mrkts = list(online_mrkts)
+
+    counter = 0
+    trigger_group = []
+    markets = []
+    for mrkt in online_mrkts:
+        if counter == 100:
+            run(markets)
+            markets = []
+            markets.append(mrkt['market'])
+            counter = 1
+        else:
+            markets.append(mrkt['market'])
+            counter += 1
+    if counter > 0:
+        run(markets)
+    print 'Total Time Taken', time.time() - st

@@ -50,7 +50,8 @@ url = 'amqp://' + RABBITMQ_USERNAME + \
 db = client[JUPITER_DB]
 today_1 = today - datetime.timedelta(days=1)
 
-@meaure(JUPITER_LOGGER)
+
+@measure(JUPITER_LOGGER)
 def run_fzdb_automation():
     SYSTEM_DATE_1 = (today - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
@@ -194,7 +195,7 @@ def run_fzdb_automation():
                                         'start_date': SYSTEM_DATE,
                                         'start_time': datetime.datetime.now().strftime('%H:%M'),
                                         'attempt_number': count + 1})
-        mrkt_flt = group([run_mar.ket_flights.s()])
+        mrkt_flt = group([run_market_flights.s()])
         res_flt = mrkt_flt()
         flt_grp_res = res_flt.get()
         check = sending_error_mail(system_date=SYSTEM_DATE, group='market_flights_group', db=db,
@@ -218,7 +219,7 @@ def run_fzdb_automation():
     # channel.basic_publish(routing_key="seat_factor", exchange="", body=json.dumps(sf_msg))
 
     if poc == 1:
-        grp2_res = res2.get()0
+        grp2_res = res2.get()
         check = sending_error_mail(system_date=SYSTEM_DATE, group='pos_od_compartment_group', db=db,
                                    attempt=count_poc + 1)
         if check == 0:

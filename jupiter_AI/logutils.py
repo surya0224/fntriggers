@@ -12,13 +12,11 @@ import time
 import logging
 import json
 from json import JSONEncoder
-from jupiter_AI.network_level_params import SYSTEM_DATE
 import datetime
 import inspect
 from bson.json_util import dumps, loads
 from bson import ObjectId
 import traceback
-
 
 
 class MeasureEncoder(JSONEncoder):
@@ -66,9 +64,6 @@ class MeasureContextManager(object):
                                                                                  datetime.datetime.now().strftime(
                                                                                     '%Y-%m-%d %H:%M:%S'),
                                                                                  time_taken))
-            self.logger.info(' System date is : ')
-            system_date="2020-06-14"
-            self.logger.info(system_date)
         else:
             self.logger.info(' Failed: {} timestamp: {} traceback: {}'.format(self.funcName,
                                                                               datetime.datetime.now().strftime(

@@ -796,7 +796,7 @@ def yqyr_hub(system_date, file_date,carrier_list, OD_list,hub,hub_area,hub_count
 
         for index, j in df_stage2_hub1.iterrows():
 
-            if j.get('RBD_198'):
+            if j.get('RBD_198') :
                 if isinstance(j['RBD_198'], list) and rbd not in j['RBD_198']:
                     continue
 

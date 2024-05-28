@@ -23,11 +23,11 @@ from jupiter_AI.triggers.common import cursor_to_df
 def run_this_year(snap_date, db):
     print "getting sales data"
     cur_sales = db.JUP_DB_Sales.aggregate([
-        # {'$match': {
-        #     '$or': [{"snap_date": snap_date},
-        #             {"enrole_update_date": snap_date}
-        #             ]
-        # }},
+        {'$match': {
+            '$or': [{"snap_date": snap_date},
+                    {"enrole_update_date": snap_date}
+                    ]
+        }},
         {
             '$addFields': {"snap_date": snap_date}
         },
@@ -117,11 +117,11 @@ def run_this_year(snap_date, db):
 
     print 'getting flown data'
     cur_flown = db.JUP_DB_Sales_Flown.aggregate([
-        # {'$match': {
-        #     '$or': [{"snap_date": snap_date},
-        #             {"enrole_update_date": snap_date}
-        #             ]
-        # }},
+        {'$match': {
+            '$or': [{"snap_date": snap_date},
+                    {"enrole_update_date": snap_date}
+                    ]
+        }},
         {
             '$addFields': {"snap_date": snap_date}
         },
@@ -253,10 +253,7 @@ def run_this_year(snap_date, db):
 def run_cap_and_last_year(snap_date, db):
     count = 1
     counti = 1
-    cur_market_agent = db.JUP_DB_Market_Characteristics_Agents.find(
-        # {"snap_date": {"$eq": snap_date}}
-        {}
-        , no_cursor_timeout=True)
+    cur_market_agent = db.JUP_DB_Market_Characteristics_Agents.find({"snap_date": {"$eq": snap_date}}, no_cursor_timeout=True)
     for k in cur_market_agent:
         try:
             if k['sales'] == -999:

@@ -19,7 +19,7 @@ def main(client):
         crsr = db.JUP_DB_ATPCO_Fares_Rules.aggregate([
             {"$match": {
 
-                    "carrier": "EK",
+                    "carrier": "FZ",
                     "fare_include": True
                     # "effective_to": {
                     #             "$gte": SYSTEM_DATE}

@@ -77,9 +77,9 @@ year_1wkLTR = cur_date_end.year
 dt_range = cur_date + relativedelta(months=+3)
 dep_date_end = datetime.strftime(dt_range, '%Y-%m') + '-'+str(calendar.monthrange(dt_range.year, dt_range.month)[1])
 
-print dep_date_end, dep_date_start, str_date,
+print dep_date_end, dep_date_start, str_date
 
-str_date = "2023-06-18";
+# var str_date = "2018-04-20";
 # var dep_date_start = "2018-03-01";
 # var dep_date_end = "2018-06-31";"""
 @measure(JUPITER_LOGGER)
@@ -94,10 +94,10 @@ def main(pos, client):
     # print(cur_date.weekday())
     summary_YJ_pipeline = [{
         '$match':{
-                'dep_date': {'$gte': "2021-01-01", '$lte': "2023-12-31"},
+                'dep_date': {'$gte': dep_date_start, '$lte': dep_date_end},
                 '$or':[{'trx_date': {'$lte': str_date}},
                 {'trx_date': {'$eq': None}}],
-                # 'pos.City': pos,
+                'pos.City': pos,
                 # 'od': od
                 # 'compartment.compartment': 'Y'
                 }
@@ -648,21 +648,22 @@ def main(pos, client):
 
 
 if __name__ == '__main__':
-    # db = client[JUPITER_DB]
     # doc = db.JUP_DB_Target_OD.distinct('snap_date')
     # str_date = doc[len(doc) - 1]
     # pos_list = list(db.JUP_DB_Target_OD.distinct('pos', {'snap_date': str_date}))
     # for pos in pos_list:
-    #     print pos
-    #     main(pos,db)
+    #     main(pos,od)
     db = client[JUPITER_DB]
-
-    market_list = db.JUP_DB_Manual_Triggers_Module.distinct('pos.City')
-    for i in market_list:
-        print i
-    # market_list = ["RUH"]
+    market_list = db.JUP_DB_Manual_Triggers_Module.distinct('market_combined')
+    market_list.remove(None)
+    actual_list = list()
     for each_market in market_list:
-        print (each_market)
-        main(each_market, client)
-        print each_market
-    # main("DOH", client)
+        actual_list.append({
+            'pos' : each_market[:3],
+            'od' : each_market[3:9]
+        })
+    for each_market in actual_list:
+        # main(each_market['pos'], each_market['od'],client)
+        pass
+        # print each_market
+    main("CMB", client)

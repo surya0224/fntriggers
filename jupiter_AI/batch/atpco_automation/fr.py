@@ -22,7 +22,6 @@ from jupiter_AI import JUPITER_DB, ATPCO_DB, JUPITER_LOGGER
 from jupiter_AI.logutils import measure
 
 
-
 @measure(JUPITER_LOGGER)
 def wild_card_check(r1, r2):
     rulesTT = r2.replace('-', '(.*)')

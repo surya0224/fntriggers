@@ -23,7 +23,6 @@ MODIFICATIONS LOG
 
 """
 import datetime
-import numpy as np
 import pandas as pd
 import inspect
 from copy import deepcopy
@@ -142,7 +141,6 @@ def generate_booking_changes_weekly_triggers(pos,
             #   Obtaining the next set of departure dates(Current Month + 3)
             if month3 != 12:
                 month4 = deepcopy(month3 + 1)
-
                 year4 = deepcopy(year3)
             else:
                 month4 = 1
@@ -312,7 +310,6 @@ class BookingChangesWeekly(DataLevel):
         # temp_df['bookings_new_doc'] = bookings_data_tw['bookings_ty']
         self.old_doc_data['bookings'] = bookings_data_lw['bookings_ty']
         self.new_doc_data['bookings'] = bookings_data_tw['bookings_ty']
-        self.old_doc_data['bookings'] = self.old_doc_data['bookings']-float(np.random.randint(6,10))/10*self.old_doc_data['bookings']
 
         # taking only those rows which have non-zero bookings_old_doc
         # old_doc_nz = temp_df[temp_df['bookings_old_doc'] !=0]

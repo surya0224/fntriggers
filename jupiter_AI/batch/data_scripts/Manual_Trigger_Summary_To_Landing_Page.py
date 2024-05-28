@@ -450,9 +450,8 @@ if __name__ == '__main__':
     pos_list = list(db.JUP_DB_User.distinct('name', {'cluster': {'$ne': 'network'}, 'active': True}))
     network_user = db.JUP_DB_User.find_one({'cluster': {'$eq': 'network'}, 'active': True})
     pos_list.append(network_user['name'])
-    # for each_user in pos_list:
-    #     print each_user
-    #     main(each_user, client)
-    #     pass
-    #     #print each_market
-    # main("Vishnu", client)
+    for each_user in pos_list:
+        #main(each_user, client)
+        pass
+        # print each_market
+    main("Europa_CMB", client)

@@ -58,10 +58,7 @@ def get_mt_df(db):
     ])
     print "Queried"
     mt_df = cursor_to_df(mt_cursor)
-    # print mt_df
     mt_df = mt_df[~(mt_df['compartment'] == 'TL')]
-    print mt_df
-
     # mt_df.sort_values(by=['revenue', 'pax'], ascending=False, inplace=True)
     # mt_df.reset_index(drop=True, inplace=True)
     # mt_df.reset_index(inplace=True)
@@ -110,9 +107,7 @@ def get_dxb_markets(df):
                  (df['origin'] == 'DWC') | (df['destination'] == 'DWC')) &
                 ((df['origin'] == df['pos']) | (df['destination'] == df['pos']))]
     sig_dxb = list(df_dxb['market'].values)
-    print sig_dxb
     sig_dxb_ods = list(df_dxb['od'].values)
-    print sig_dxb_ods
     df.drop(['origin', 'destination'], axis=1, inplace=True)
     return sig_dxb, sig_dxb_ods
 
@@ -164,7 +159,6 @@ def get_user_defined_markets(db):
                                               {"effective_date_to": ""}]})
     user_defined_markets = []
     for i in crsr:
-        print i
         user_defined_markets = i['user_defined_markets']
     return user_defined_markets
 
@@ -194,7 +188,7 @@ def main(client):
     print user_defined_markets
     # print user_defined_ods
     online_df = mt_df
-    print online_df.tail(5)
+    # print online_df.tail(5)
     user_defined_markets_df = pd.DataFrame(user_defined_markets, columns=['market'])
     user_defined_markets_df['pos'] = user_defined_markets_df['market'].str.slice(0, 3)
     user_defined_markets_df['od'] = user_defined_markets_df['market'].str.slice(3, 9)
@@ -202,8 +196,7 @@ def main(client):
     user_defined_markets_df['pax'] = 0
     user_defined_markets_df['revenue'] = 0
     online_df = pd.concat([online_df, user_defined_markets_df])
-    print "klll"
-    print online_df.tail(5)
+    # print online_df.tail(5)
     online_df.drop_duplicates(subset=['market'], keep='first', inplace=True)
     # online_df.reset_index(drop=True, inplace=True)
     # print online_df.tail(5)
@@ -215,17 +208,14 @@ def main(client):
                    online_df['pos'].isin(online_pos)), "online"] = True
     online_df.drop(["origin", "destination"], axis=1, inplace=True)
     true_df = online_df[online_df['online'] == True]
-
     false_df = online_df[online_df['online'] == False]
     true_df.sort_values(by=['revenue', 'pax'], ascending=False, inplace=True)
-
     true_df.reset_index(drop=True, inplace=True)
     true_df.reset_index(inplace=True)
     true_df.rename(columns={'index': 'rank'}, inplace=True)
     true_df['rank'] += 1
     false_df['rank'] = 0
     online_df = pd.concat([true_df, false_df])
-    print online_df
     # host_od_ods = get_host_od_capacity_ods()
     # host_od_df = pd.DataFrame({'od': host_od_ods, 'online': True})
     # print "Got HOST OD DF"
@@ -237,11 +227,8 @@ def main(client):
     if users_cursor.count() > 0:
         for user in users_cursor:
             user_name = user['name']
-            print user_name
             pos_user = user['list_of_pos']
-            print pos_user
             temp_df = online_df[(online_df['online'] == True) & (online_df['pos'].isin(pos_user))]
-            print temp_df
             temp_df.drop(['significance'], axis=1, inplace=True)
             temp_df_2 = temp_df.groupby(by=['od'], as_index=False)['pax', 'revenue'].sum()
             pax_markets = get_pax_markets(temp_df)
@@ -251,16 +238,12 @@ def main(client):
             revenue_ods = get_revenue_ods(temp_df_2)
             sig_markets = list(set(pax_markets + revenue_markets + dxb_markets + user_defined_markets))
             sig_ods = list(set(pax_ods + revenue_ods + dxb_ods))
-            print  sig_ods
             # user_significant_df = temp_df[temp_df['market'].isin(sig_markets)]
             # user_significant_df['significance_temp'] = [[{'name': user_name, 'significant_flag': True,
             #                                               'od_significance': False}]]*len(user_significant_df)
             # user_significant_df.drop(['pax', 'revenue', 'online', 'pos', 'od', 'compartment', 'rank'], axis=1, inplace=True)
             # temp_df = pd.merge(temp_df, user_significant_df, on=['market'], how='left')
-            # for row in temp_df.loc[temp
-            #
-            #
-            # _df['significance_temp'].isnull(), 'significance_temp'].index:
+            # for row in temp_df.loc[temp_df['significance_temp'].isnull(), 'significance_temp'].index:
             #     temp_df.at[row, 'significance_temp'] = [{'name': user_name, 'significant_flag': False,
             #                                              'od_significance': False}]
             # print temp_df.columns
@@ -293,7 +276,6 @@ def main(client):
 
             temp_df.drop(['pos', 'od', 'compartment', 'revenue', 'pax', 'online', 'rank'], axis=1, inplace=True)
             online_df = pd.merge(online_df, temp_df, on=['market'], how='left')
-            print online_df
             for row in online_df.loc[online_df['significance_temp'].isnull(), 'significance_temp'].index:
                 online_df.at[row, 'significance_temp'] = []
             online_df['significance'] += online_df['significance_temp']

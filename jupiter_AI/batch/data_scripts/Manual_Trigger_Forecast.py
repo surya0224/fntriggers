@@ -77,7 +77,7 @@ def main(pos, snap_date, doc, client):
     # str_date = doc[len(doc)-1]
     Bulk = db.JUP_DB_Manual_Triggers_Module.initialize_unordered_bulk_op()
     Bulk_summary = db.JUP_DB_Manual_Triggers_Module_Summary.initialize_unordered_bulk_op()
-    cursor = db.JUP_DB_Forecast_OD_1.find({"snap_date": str_date, 'pos': pos}, no_cursor_timeout=True)
+    cursor = db.JUP_DB_Forecast_OD.find({"snap_date": str_date, 'pos': pos}, no_cursor_timeout=True)
     # print list(cursor)
 
     for x in cursor:
@@ -90,15 +90,15 @@ def main(pos, snap_date, doc, client):
             frev = x['revenue'] / duration;
             forecast = dict()
             forecast['pax'] = x['pax']
-            forecast['avgFare'] = x['average_fare']
+            forecast['avgFare'] = x['avgFare']
             forecast['revenue'] = x['revenue']
             forecast['pax_1'] = x['pax_1']
-            forecast['avgFare_1'] = x['average_fare_1']
+            forecast['avgFare_1'] = x['avgFare_1']
             forecast['revenue_1'] = x['revenue_1']
             snap_month = int(x['snap_date'][5:7])
             snap_year = int(x['snap_date'][0:4])
-            dep_month = int(x['month'])
-            dep_year = int(x['year'])
+            dep_month = int(x['Month'])
+            dep_year = int(x['Year'])
             pos = dict()
             od = x['origin'] + x['destination']
             pos['Network'] = 'Network'
@@ -186,10 +186,10 @@ def main(pos, snap_date, doc, client):
                             "destination": destination,
                             "compartment": compartment['compartment'],
                             "forecast_pax": x['pax'],
-                            "forecast_avgFare": x['average_fare'],
+                            "forecast_avgFare": x['avgFare'],
                             "forecast_revenue": x['revenue'],
                             "forecast_pax_1": x['pax_1'],
-                            "forecast_avgFare_1": x['average_fare_1'],
+                            "forecast_avgFare_1": x['avgFare_1'],
                             "forecast_revenue_1": x['revenue_1'],
                             "prorate_forecast_pax": fpax,
                             "prorate_forecast_revenue": frev,
@@ -212,16 +212,14 @@ def main(pos, snap_date, doc, client):
         Bulk.execute()
         Bulk_summary.execute()
     except Exception as bwe:
-
         print(bwe)
 
 
 if __name__ == '__main__':
     db = client[JUPITER_DB]
-    doc = db.JUP_DB_Forecast_OD_1.distinct('snap_date')
+    doc = db.JUP_DB_Forecast_OD.distinct('snap_date')
     str_date = doc[len(doc) - 1]
-    print str_date
-    pos_list = list(db.JUP_DB_Forecast_OD_1.distinct('pos', {'snap_date': str_date}))
+    pos_list = list(db.JUP_DB_Forecast_OD.distinct('pos', {'snap_date': str_date}))
     doc_1 = dict()
     cal_cursor = db.JUP_DB_Calendar_Master.find({'duration': {'$ne': None}})
 

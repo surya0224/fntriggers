@@ -40,7 +40,7 @@ Currency_List = ['GBP', 'AED', 'INR', 'USD']
 Host_Airline_Hub = 'DXB'
 recommendation_lower_threshold = -20
 recommendation_upper_threshold = +20
-#SYSTEM_DATE = datetime.datetime.now().strftime('%Y-%m-%d')
+SYSTEM_DATE = datetime.datetime.now().strftime('%Y-%m-%d')
 # SYSTEM_DATE = '2018-03-22'
 INF_DATE_STR = '2099-12-31'
 def mongo_client():
@@ -52,8 +52,11 @@ client = mongo_client()
 db = client[JUPITER_DB]
 ## System date change
 doc = db.JUP_DB_Data_Status.distinct('snap_date')
-SYSTEM_DATE = doc[len(doc) - 1]
-
+str_date = doc[len(doc) - 1]
+if SYSTEM_DATE == str_date:
+    pass
+else:
+    SYSTEM_DATE = str_date
 
 SYSTEM_TIME = datetime.datetime.now().strftime("%H:%M:%S")
 today = datetime.datetime.strptime(SYSTEM_DATE, '%Y-%m-%d')

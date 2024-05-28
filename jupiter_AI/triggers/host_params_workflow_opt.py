@@ -175,17 +175,13 @@ def get_no_of_days(month, year):
 
 @measure(JUPITER_LOGGER)
 def get_od_distance(od, db):
-    distance=-1
     crsr = db.JUP_DB_OD_Distance_Master.find({'od':od})
-    try:
-        if crsr.count() == 1:
-            distance = crsr[0]['distance']
-            if type(distance) not in [float, int]:
-                distance = -1
-        else:
+    if crsr.count() == 1:
+        distance = crsr[0]['distance']
+        if type(distance) not in [float, int]:
             distance = -1
-    except:
-        print od
+    else:
+        distance = -1
     return distance
 
 

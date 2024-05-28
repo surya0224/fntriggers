@@ -60,9 +60,9 @@ pros_cols = ['flight_number',
 @measure(JUPITER_LOGGER)
 def get_this_year_df(snap_date, db):
     inv_cur = db.JUP_DB_Inventory_Leg.aggregate([
-        # {
-        #     '$match': {"sys_snap_date": snap_date}
-        # },
+        {
+            '$match': {"sys_snap_date": snap_date}
+        },
         {
             '$project': {
                 '_id': 0,
@@ -96,8 +96,7 @@ def get_this_year_df(snap_date, db):
                          'y_allocation': 'allocation'}, inplace=True)
     y_df['compartment'] = 'Y'
     j_df.drop(['y_cap', 'y_seat_factor', 'y_booking', 'y_allocation'], axis=1, inplace=True)
-    j_df.rename(columns={'j_cap'
-                         : 'capacity', 'j_seat_factor': 'booked_seat_factor', 'j_booking': 'bookings',
+    j_df.rename(columns={'j_cap': 'capacity', 'j_seat_factor': 'booked_seat_factor', 'j_booking': 'bookings',
                          'j_allocation': 'allocation'}, inplace=True)
     j_df['compartment'] = 'J'
     inv_df = pd.concat([y_df, j_df])
@@ -105,8 +104,8 @@ def get_this_year_df(snap_date, db):
     print 'Built this year inventory df'
 
     flight_leg_cur = db.JUP_DB_Flight_Leg.aggregate([
-        # {'$match': {'snap_date': snap_date}
-        #  },
+        {'$match': {'snap_date': snap_date}
+         },
         {
             '$project': {
                 'Flight_num': 1,
@@ -134,37 +133,35 @@ def get_this_year_df(snap_date, db):
         flight_leg_df = pd.DataFrame(columns=flight_leg_cols)
     flight_leg_df.rename(columns={'Flight_num': 'flight_number', 'Seat_Factor': 'ticketed_seat_factor',
                                   'Yield': 'yield'}, inplace=True)
-    # flight_leg_df['flight_number'] = flight_leg_df['flight_number'].astype('int')
+    flight_leg_df['flight_number'] = flight_leg_df['flight_number'].astype('int')
 
     print 'Built this year flight leg df'
 
-    # pros_cur = db.JUP_DB_Pros_Flight.aggregate([
-    #     {
-    #         '$match': {
-    #             # 'snap_date': snap_date,
-    #             'carrier': Host_Airline_Code}
-    #     },
-    #     {
-    #         '$project': {
-    #             'flight_number': 1,
-    #             'origin': 1,
-    #             'destination': 1,
-    #             'compartment': 1,
-    #             'dep_date': 1,
-    #             'snap_date': 1,
-    #             'leg_cabin_re_calc_out': 1,
-    #             'od': {'$concat': ['$origin', '$destination']},
-    #             '_id': 0
-    #         }
-    #     }
-    # ])
-    pros_cur = []
+    pros_cur = db.JUP_DB_Pros_Flight.aggregate([
+        {
+            '$match': {'snap_date': snap_date, 'carrier': Host_Airline_Code}
+        },
+        {
+            '$project': {
+                'flight_number': 1,
+                'origin': 1,
+                'destination': 1,
+                'compartment': 1,
+                'dep_date': 1,
+                'snap_date': 1,
+                'leg_cabin_re_calc_out': 1,
+                'od': {'$concat': ['$origin', '$destination']},
+                '_id': 0
+            }
+        }
+    ])
+
     print 'Queried this year pros'
     pros_df = cursor_to_df(pros_cur)
     if len(pros_df) == 0:
         pros_df = pd.DataFrame(columns=pros_cols)
     pros_df.rename(columns={'leg_cabin_re_calc_out': 'pax_forecast'}, inplace=True)
-    # pros_df['flight_number'] = pros_df['flight_number'].astype('int')
+    pros_df['flight_number'] = pros_df['flight_number'].astype('int')
     print 'Built this year pros df'
 
     this_year_df = inv_df.merge(flight_leg_df, on=['flight_number', 'od', 'origin', 'destination',
@@ -179,9 +176,9 @@ def get_this_year_df(snap_date, db):
 @measure(JUPITER_LOGGER)
 def run_this_year(snap_date, db):
     cur = db.JUP_DB_Inventory_Leg.find(
-        # {
-        #     "sys_snap_date": snap_date
-        # },
+        {
+            "sys_snap_date": snap_date
+        },
         {
             '_id': 0,
             'Flight_Number': 1,
@@ -263,7 +260,7 @@ def run_this_year(snap_date, db):
                     'Flight_num': i['flight_number'],
                     'od': i['od'],
                     'dep_date': i['dep_date'],
-                    # 'snap_date': {"$lte": i['snap_date']}
+                    'snap_date': {"$lte": i['snap_date']}
                 }
             },
             # {
@@ -322,7 +319,7 @@ def run_this_year(snap_date, db):
                     'origin': i['origin'],
                     'destination': i['destination'],
                     'dep_date': i['dep_date'],
-                    # 'snap_date': {"$lte": i['snap_date']}
+                    'snap_date': {"$lte": i['snap_date']}
                 }
             },
             # {
@@ -378,9 +375,9 @@ def get_last_year_df(snap_date, db):
     # VLYR Logic for Inventory and Pros, Flown Logic for Flight Leg
     last_year_snap = datetime.strftime(datetime.strptime(snap_date, '%Y-%m-%d') - timedelta(days=364), '%Y-%m-%d')
     inv_cur = db.JUP_DB_Inventory_Leg.aggregate([
-        # {
-        #     '$match': {"sys_snap_date": last_year_snap}
-        # },
+        {
+            '$match': {"sys_snap_date": last_year_snap}
+        },
         {
             '$project': {
                 '_id': 0,
@@ -418,7 +415,7 @@ def get_last_year_df(snap_date, db):
                          'j_allocation': 'allocation'}, inplace=True)
     j_df['compartment'] = 'J'
     inv_df = pd.concat([y_df, j_df])
-    # inv_df['flight_number'] = inv_df['flight_number'].astype('int')
+    inv_df['flight_number'] = inv_df['flight_number'].astype('int')
 
     # last_year_ods = inv_df['od'].values
     # delta_ods = list(set(last_year_ods) - set(this_year_ods))
@@ -455,8 +452,7 @@ def get_last_year_df(snap_date, db):
 
     for snap_date in dates_range:
         flight_leg_cur = db.JUP_DB_Flight_Leg.aggregate([
-            {'$match': {
-                # 'snap_date': snap_date,
+            {'$match': {'snap_date': snap_date,
                         'dep_date': snap_date
                         }
              },
@@ -498,7 +494,7 @@ def get_last_year_df(snap_date, db):
 
     flight_leg_df.rename(columns={'Flight_num': 'flight_number', 'Seat_Factor': 'ticketed_seat_factor',
                                   'Yield': 'yield'}, inplace=True)
-    # flight_leg_df['flight_number'] = flight_leg_df['flight_number'].astype('int')
+    flight_leg_df['flight_number'] = flight_leg_df['flight_number'].astype('int')
     # last_year_ods = flight_leg_df['od'].values
     # delta_ods = list(set(last_year_ods) - set(this_year_ods))
     # flight_leg_df.drop(index=flight_leg_df[flight_leg_df['od'].isin(delta_ods)].index, inplace=True)
@@ -512,33 +508,31 @@ def get_last_year_df(snap_date, db):
                                   'ticketed_seat_factor': 'ticketed_seat_factor_1'}, inplace=True)
     print 'Built last year flight leg df'
 
-    # pros_cur = db.JUP_DB_Pros_Flight.aggregate([
-    #     {
-    #         '$match': {
-    #             # 'snap_date': last_year_snap,
-    #             'carrier': Host_Airline_Code}
-    #     },
-    #     {
-    #         '$project': {
-    #             'flight_number': 1,
-    #             'origin': 1,
-    #             'destination': 1,
-    #             'compartment': 1,
-    #             'dep_date': 1,
-    #             'snap_date': 1,
-    #             'leg_cabin_re_calc_out': 1,
-    #             'od': {'$concat': ['$origin', '$destination']},
-    #             '_id': 0
-    #         }
-    #     }
-    # ])
-    pros_cur = []
+    pros_cur = db.JUP_DB_Pros_Flight.aggregate([
+        {
+            '$match': {'snap_date': last_year_snap, 'carrier': Host_Airline_Code}
+        },
+        {
+            '$project': {
+                'flight_number': 1,
+                'origin': 1,
+                'destination': 1,
+                'compartment': 1,
+                'dep_date': 1,
+                'snap_date': 1,
+                'leg_cabin_re_calc_out': 1,
+                'od': {'$concat': ['$origin', '$destination']},
+                '_id': 0
+            }
+        }
+    ])
+
     print 'Queried last year pros'
     pros_df = cursor_to_df(pros_cur)
     if len(pros_df) == 0:
         pros_df = pd.DataFrame(columns=pros_cols)
     pros_df.rename(columns={'leg_cabin_re_calc_out': 'pax_forecast'}, inplace=True)
-    # pros_df['flight_number'] = pros_df['flight_number'].astype('int')
+    pros_df['flight_number'] = pros_df['flight_number'].astype('int')
 
     # last_year_ods = pros_df['od'].values
     # delta_ods = list(set(last_year_ods) - set(this_year_ods))
@@ -567,7 +561,7 @@ def run_last_year(snap_date, db):
     count = 1
     t = 0
     cur = db.JUP_DB_Market_Characteristics_Flights.find({
-        # 'snap_date': snap_date
+        'snap_date': snap_date
     }, no_cursor_timeout=True)
     for i in cur:
         last_year_dep_date = datetime.strftime(datetime.strptime(i['dep_date'], "%Y-%m-%d") -
@@ -578,7 +572,7 @@ def run_last_year(snap_date, db):
             'flight_number': i['flight_number'],
             'od': i['od'],
             'dep_date': last_year_dep_date,
-            # 'snap_date': last_year_snap_date,
+            'snap_date': last_year_snap_date,
             'compartment': i['compartment']
         })
         if last_year.count() == 0:

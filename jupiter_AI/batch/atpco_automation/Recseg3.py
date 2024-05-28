@@ -4,7 +4,6 @@ import pymongo
 from pymongo import MongoClient
 import time
 from datetime import datetime, timedelta
-from jupiter_AI import ATPCO_DB, JUPITER_DB, JUPITER_LOGGER, mongo_client
 
 
 @measure(JUPITER_LOGGER)
@@ -119,10 +118,10 @@ def recseg3(system_date,file_time, client):
         except KeyError:
             no_segs = i['NO_SEGS']
             for j in range(int(no_segs)):
-                i['MARKETING_CARRIER_'+str(j+1)] = i['SEGS_CARRIER'][(j*14):(j*14)+3].strip()
-                i['OPERATING_CARRIER_'+str(j+1)] = i['SEGS_CARRIER'][(j*14)+3:(j*14)+6].strip()
-                i['FLT_NO_1_'+str(j+1)] = i['SEGS_CARRIER'][(j*14)+6:(j*14)+10].strip()
-                i['FLT_NO_2_'+str(j+1)] = i['SEGS_CARRIER'][(j*14)+10:(j*14)+14].strip()
+                i['MARKETING_CARRIER_'+str(j+1)] = i['SEGS_CARRIER'][(j*14):(j*14)+3]
+                i['OPERATING_CARRIER_'+str(j+1)] = i['SEGS_CARRIER'][(j*14)+3:(j*14)+6]
+                i['FLT_NO_1_'+str(j+1)] = i['SEGS_CARRIER'][(j*14)+6:(j*14)+10]
+                i['FLT_NO_2_'+str(j+1)] = i['SEGS_CARRIER'][(j*14)+10:(j*14)+14]
 
             coll_Record_3_Table_986.save(i)
         counter += 1
@@ -293,5 +292,4 @@ def recseg3(system_date,file_time, client):
 
 
 if __name__=='__main__':
-    client = mongo_client()
-    recseg3("2019-06-13","20",client)
+    recseg3()

@@ -219,7 +219,6 @@ def get_od_capacity_simple(db):
         print "removing previous documents..."
         db.JUP_DB_OD_Capacity.remove({})
         city_ap_crsr = list(db.JUP_DB_City_Airport_Mapping.find({}, {"_id": 0}))
-        print "Hi"
 
         city_ap_df = pd.DataFrame(city_ap_crsr)
 
@@ -259,7 +258,6 @@ def get_od_capacity_simple(db):
         cap = cap.merge(city_ap_df[['Airport_Code', 'City_Code']], left_on='destination',
                                               right_on='Airport_Code', how='left').rename(
             columns={"City_Code": "pseudo_destination"}).drop('Airport_Code', axis=1)
-        print "hi@@@@"
 
         cap.loc[cap['pseudo_origin'].isnull(), 'pseudo_origin'] = cap.loc[
             cap['pseudo_origin'].isnull(), 'pseudo_origin'].fillna(value='')
@@ -276,7 +274,7 @@ def get_od_capacity_simple(db):
         cap['pseudo_od'] = cap['pseudo_origin'] + cap['pseudo_destination']
 
         cap['od'] = cap['origin'] + cap['destination']
-        print "kiiiiiii"
+
 
 
         # cap.drop(['distance'], axis=1, inplace=True)
@@ -286,14 +284,11 @@ def get_od_capacity_simple(db):
                                   "freq": "od_freq"})
 
         cap["is_constructed"] = 0
-        print "loppp"
 
         counter = 0
 
         cap['month'] = cap['month_year'].str.slice(4,).astype('int')
         cap['year'] = cap['month_year'].str.slice(0,4).astype('int')
-        print cap["month"]
-        print cap["year"]
         for chunk in chunker(cap, 1000):
 
             counter += len(chunk)

@@ -17,9 +17,9 @@ import time
 import timeit
 from dateutil.relativedelta import relativedelta
 
-from jupiter_AI import client, JUPITER_DB
+from jupiter_AI import client, JUPITER_DB, JUPITER_LOGGER
 from jupiter_AI.logutils import measure
-from jupiter_AI.network_level_params import SYSTEM_DATE, JUPITER_LOGGER
+from jupiter_AI.network_level_params import SYSTEM_DATE
 
 # Connect mongodb db business layer
 # fzDBConn = client[JUPITER_DB]
@@ -27,7 +27,7 @@ from jupiter_AI.network_level_params import SYSTEM_DATE, JUPITER_LOGGER
 """
 global parameter pax , revenue weightage
 """
-SYSTEM_DATE = "2023-06-18"
+# SYSTEM_DATE = "2018-04-10"
 
 Pax_weight = 60
 Revenue_weight = 40
@@ -186,14 +186,14 @@ def main(pos, client):
     yearformat = '%Y'
     monthformat = '%m'
     system_date = datetime.strptime(SYSTEM_DATE, '%Y-%m-%d');
-    lastYearSameDate_ISO = system_date + dt.timedelta(days=-365)
+    lastYearSameDate_ISO = system_date + dt.timedelta(days=-364)
     lastYearSameDate = datetime.strftime(lastYearSameDate_ISO, dateformat)
 
     # for net pax
     lastYearSevenDays_OLD_ISO = lastYearSameDate_ISO + dt.timedelta(days=-7)
 
     print "lastYearSameDate",lastYearSameDate
-    prime_crscr = fzDBConn.JUP_DB_Manual_Triggers_Module.find({"pos.City":pos},
+    prime_crscr = fzDBConn.JUP_DB_Manual_Triggers_Module.find({"pos.City":pos,"trx_date": lastYearSameDate},
                                                               {"trx_date": 1, "dep_date": 1, "pos": 1,
                                                                "origin": 1, "destination": 1, "compartment": 1,
                                                                "book_pax": 1, "book_revenue": 1, "sale_pax": 1,
@@ -212,8 +212,8 @@ def main(pos, client):
             ISO_trx_date = datetime.strptime(each_crscr['trx_date'], dateformat)
             ISO_dep_date = datetime.strptime(each_crscr['dep_date'], dateformat)
 
-            next_year_ISO_trx_date = ISO_trx_date + dt.timedelta(days=365)
-            next_year_ISO_dep_date = ISO_dep_date + dt.timedelta(days=365)
+            next_year_ISO_trx_date = ISO_trx_date + dt.timedelta(days=364)
+            next_year_ISO_dep_date = ISO_dep_date + dt.timedelta(days=364)
 
             next_year_trx_date = next_year_ISO_trx_date.strftime(dateformat)
             next_year_dep_date = next_year_ISO_dep_date.strftime(dateformat)
@@ -334,8 +334,8 @@ def main(pos, client):
         data = fzDBConn.JUP_DB_Manual_Triggers_Module.aggregate([
             {'$match': {
                 "pos.City": pos,
-                 'dep_date': {'$gte': lastYearSevenDays_, '$lte': lastYearSevenDays},
-                 # 'dep_date' : {'$gte' : '2021-01-01', '$lte':'2023-10-30'},
+                'dep_date': {'$gte': lastYearSevenDays_, '$lte': lastYearSevenDays},
+                # 'dep_date' : {'$gte' : '2017-03-02', '$lte':'2017-04-01'},
             }},
             {'$group': {
                 '_id': {'dep_date': '$dep_date', 'pos': '$pos.City', 'od': '$od', 'origin': '$origin.City',
@@ -361,7 +361,7 @@ def main(pos, client):
             try:
                 dateformat = '%Y-%m-%d'
                 ISO_dep_date = datetime.strptime(each['_id']['dep_date'], dateformat)
-                next_year_ISO_dep_date = ISO_dep_date + dt.timedelta(days=365)
+                next_year_ISO_dep_date = ISO_dep_date + dt.timedelta(days=364)
                 next_year_dep_date = next_year_ISO_dep_date.strftime(dateformat)
                 dep_month = int(next_year_ISO_dep_date.strftime("%m"))
                 dep_year = int(next_year_ISO_dep_date.strftime("%Y"))
@@ -418,8 +418,8 @@ def main(pos, client):
         data = fzDBConn.JUP_DB_Manual_Triggers_Module.aggregate([
             {'$match': {
                 "pos.City": pos,
-                 # 'dep_date': {'$gte': lastYearSevenDays_, '$lte': lastYearSameDate},
-                'dep_date': {'$gte': '2021-01-01', '$lte': '2023-12-31'}
+                'dep_date': {'$gte': lastYearSevenDays_, '$lte': lastYearSameDate},
+                # 'dep_date' : {'$gte' : '2017-03-02', '$lte':'2017-04-01'},
             }},
             {'$group': {
                 '_id': {'dep_date': '$dep_date', 'pos': '$pos.City', 'od': '$od', 'origin': '$origin.City',
@@ -446,7 +446,7 @@ def main(pos, client):
                 # print(" F " + str(num))
                 dateformat = '%Y-%m-%d'
                 ISO_dep_date = datetime.strptime(each['_id']['dep_date'], dateformat)
-                next_year_ISO_dep_date = ISO_dep_date + dt.timedelta(days=365)
+                next_year_ISO_dep_date = ISO_dep_date + dt.timedelta(days=364)
                 next_year_dep_date = next_year_ISO_dep_date.strftime(dateformat)
                 dep_month = int(next_year_ISO_dep_date.strftime("%m"))
                 dep_year = int(next_year_ISO_dep_date.strftime("%Y"))
@@ -501,6 +501,6 @@ if __name__=='__main__':
     fzDBConn = client[JUPITER_DB]
     # pos_list = list(fzDBConn.JUP_DB_Manual_Triggers_Module.distinct('pos.City',{'pos':{'$ne' : None}, 'trx_date':"2018-04-18"}))
     pos_list = list(fzDBConn.JUP_DB_Manual_Triggers_Module.distinct('pos.City'))
-    print pos_list
+    # print pos_list
     for pos in pos_list:
         main(pos, client)

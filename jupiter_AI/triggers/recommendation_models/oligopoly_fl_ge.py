@@ -4351,11 +4351,11 @@ if __name__ == '__main__':
     client = mongo_client()
     db=client[JUPITER_DB]
     #mrkt = "UAEDXBJEDY"
-    market_array = ["KWIKWISYDY"]
+    market_array = ["COKCOKKWIY"]
     for mrkt in market_array:
         print mrkt
         fares = main(pos=mrkt[0:3], origin=mrkt[3:6], destination=mrkt[6:9], compartment=mrkt[9:],
-                 dep_date_start='2023-06-18', dep_date_end='2023-08-12', db=db)
+                 dep_date_start='2019-03-13', dep_date_end='2019-05-12', db=db)
         df = pd.DataFrame(fares)
         print df.to_string()
 

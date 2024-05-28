@@ -23,11 +23,11 @@ from jupiter_AI.batch.customer_segmentation import Segment_FZ
 def run_this_year(snap_date, db):
     print "getting sales data"
     cur_sales = db.JUP_DB_Sales.aggregate([
-        # {'$match': {
-        #     '$or': [{"snap_date": snap_date, 'segment_fz': {'$ne': None}},
-        #             {"enrole_update_date": snap_date, 'segment_fz': {'$ne': None}}
-        #             ]
-        # }},
+        {'$match': {
+            '$or': [{"snap_date": snap_date, 'segment_fz': {'$ne': None}},
+                    {"enrole_update_date": snap_date, 'segment_fz': {'$ne': None}}
+                    ]
+        }},
         {
             '$addFields': {"snap_date": snap_date}
         },
@@ -116,11 +116,11 @@ def run_this_year(snap_date, db):
 
     print 'getting flown data'
     cur_flown = db.JUP_DB_Sales_Flown.aggregate([
-        # {'$match': {
-            # '$or': [{"snap_date": snap_date, 'segment_fz': {'$ne': None}},
-            #         {"enrole_update_date": snap_date, 'segment_fz': {'$ne': None}}
-            #         ]
-        # }},
+        {'$match': {
+            '$or': [{"snap_date": snap_date, 'segment_fz': {'$ne': None}},
+                    {"enrole_update_date": snap_date, 'segment_fz': {'$ne': None}}
+                    ]
+        }},
         {
             '$addFields': {"snap_date": snap_date}
         },
@@ -251,10 +251,7 @@ def run_this_year(snap_date, db):
 def run_cap_and_last_year(snap_date, db):
     count = 1
     counti = 1
-    cur_market_segment = db.JUP_DB_Market_Characteristics_Segments.find(
-        # {"snap_date": {"$eq": snap_date}}
-        {}
-        , no_cursor_timeout=True)
+    cur_market_segment = db.JUP_DB_Market_Characteristics_Segments.find({"snap_date": {"$eq": snap_date}}, no_cursor_timeout=True)
     for k in cur_market_segment:
         try:
             if k['sales'] == -999:

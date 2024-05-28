@@ -1,3 +1,4 @@
+# NETWORK_LEVEL_PARAMETERS LIST
 import logging
 import os
 import datetime
@@ -19,23 +20,20 @@ ANALYTICS_MONGO_PASSWORD = 'flynava123'
 MONGO_SOURCE_DB = 'admin'
 JUPITER_DB = 'fzDB_prod'
 ATPCO_DB = 'ATPCO_prod'
-RABBITMQ_HOST = '13.235.142.242'
+RABBITMQ_HOST = '3.1.13.200'
 RABBITMQ_PORT = 5672
-RABBITMQ_USERNAME = 'guest'
-RABBITMQ_PASSWORD = 'guest'
-
-JAVA_URL = "https://unified.flynava.ai:8080/jupiter/getManualTriggers"
-JAVA_LP_URL = "http://3.34.170.19:8080/jupiter/runLandingPageScript"
+RABBITMQ_USERNAME = 'test'
+RABBITMQ_PASSWORD = 'test'
+JAVA_URL = "https://fz-jupiter.flynava.ai:8080/jupiter/getManualTriggers"
 SECURITY_CLIENT_ID = 'pdss'
 SECURITY_CLIENT_SECRET_ID = '386667c1-0528-40b3-9054-2a3215742dbd'
 AUTH_URL = 'https://smartrez.flydubai.com/smartrez-gateway/security/createServiceToken'
 MAIL_URL = 'https://smartrez.flydubai.com/smartrez-gateway/smartrezmail/mail/send'
 MAIL_RECEIVERS = ["fz_support@flynava.com"]
 # MAIL_RECEIVERS = ["abhinav.garg@flydubai.com", "tulsi.choudhary@flydubai.com", "somya.tomar@flydubai.com"]
-PYTHON_PATH = 'E:/jupiter-python/'
-
+PYTHON_PATH = '/app/python/analytics/'
 Host_Airline_Code = 'FZ'
-Currency_List = ['AED','USD']
+Currency_List = ['GBP', 'AED', 'INR', 'USD']
 Host_Airline_Hub = 'DXB'
 recommendation_lower_threshold = -20
 recommendation_upper_threshold = +20

@@ -1033,10 +1033,11 @@ def get_host_fares_df(pos,
                 & (dF['travel_date_to'] < extreme_start_date)), 'is_expired'] = 1
         dF = dF.sort_values("fare")
     dF = dF[dF['effective_from'] < dF['effective_to']]
+    print "Total number of effective fares = ", len(dF)
     # city_ap_df = pd.DataFrame(city_ap_crsr)
     # dF = dF.merge(city_ap_df, left_on='origin', right_on='Airport_Code', how='left').drop('Airport_Code',
     #                                                                                       axis=1).rename(
-    #     columns={"City_Code": "pseudo_origin"})    print "Total number of effective fares = ", len(dF)
+    #     columns={"City_Code": "pseudo_origin"})
     # dF = dF.merge(city_ap_df, left_on='destination', right_on='Airport_Code', how='left').drop('Airport_Code',
     #                                                                                            axis=1).rename(
     #     columns={"City_Code": "pseudo_destination"})

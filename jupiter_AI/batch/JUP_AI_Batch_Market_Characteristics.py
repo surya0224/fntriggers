@@ -483,7 +483,7 @@ def add_ly_values(complete_df, db, months):
     #
     #     final_df = pd.concat([final_df, temp_df])
     year_list = list(set(complete_df['year'].values))
-    last_year_list = [int(int(x)-1) for x in year_list]
+    last_year_list = [int(x-1) for x in year_list]
 
     #common_year = list(set(year_list).intersection(last_year_list))
 
@@ -1150,23 +1150,23 @@ def main(months, client):
 
 if __name__ == '__main__':
     from celery import group
-    # from jupiter_AI.batch.atpco_automation.Automation_tasks import run_pos_od_compartment
-    # client = mongo_client()
-    # st = time.time()
-    # months_list = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
-    # posodc_group = []
-    # for months in months_list:
-    #     posodc_group.append(run_pos_od_compartment.s(months=months))
-    # group2 = group(posodc_group)
-    # res2 = group2()
-    # res2.get()
-    # client.close()
-    # print 'time taken:', time.time() - st
-    # print get_ratings_df_temp_product()
-    # # client = mongo_client()
-    # # for mon in [[5]]:
-    # #     main(mon, client)
-    # # client.close()
+    from jupiter_AI.batch.atpco_automation.Automation_tasks import run_pos_od_compartment
     client = mongo_client()
-    main([1,2,3,4,5,6,7,8,9,10,11,12], client)
+    st = time.time()
+    months_list = [[1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]]
+    posodc_group = []
+    for months in months_list:
+        posodc_group.append(run_pos_od_compartment.s(months=months))
+    group2 = group(posodc_group)
+    res2 = group2()
+    res2.get()
+    client.close()
+    print 'time taken:', time.time() - st
+    print get_ratings_df_temp_product()
+    # client = mongo_client()
+    # for mon in [[5]]:
+    #     main(mon, client)
+    # client.close()
+    # client = mongo_client()
+    # main([5], client)
     # client.close()

@@ -45,21 +45,15 @@ def get_competitor_rating(filter_competitor_dhb_scr):
     :return: dictionary of competitor ratings
     """
     try:
-        if 'JUP_DB_Competitor_Ratings_Old' in db.collection_names():
-            cursor = list(db.JUP_DB_Competitor_Ratings_Old.aggregate(
-                [
-                    {"$match":{'origin': {'$in': filter_competitor_dhb_scr['origin']},
-                                                       'destination': {'$in': filter_competitor_dhb_scr['destination']}}},
-                    {"$project":{"rating_for_DB":1,"_id":0}},
-                    {"$unwind":"$rating_for_DB"},
-                    {"$project":{"rating":"$rating_for_DB.rating","airline":"$rating_for_DB.airline"}}
-                ]
-            ))
+        if 'JUP_DB_Competitor_Ratings' in db.collection_names():
+            cursor = db.JUP_DB_Competitor_Ratings.find({'origin': {'$in': filter_competitor_dhb_scr['origin']},
+                                                       'destination': {'$in': filter_competitor_dhb_scr['destination']}},
+                                                       projection={'airline': 1, 'rating': 1, '_id': 0})
             response = dict()
             # lst_c = list(cursor)
             for i in cursor:
                 # print i
-                response[i['airline']] = round(i['rating'], 3)
+                response[i['airline']] = round(i['rating'],3)
             return response
         else: # if collection to query is not present in database
                 obj_error = error_class.ErrorObject(error_class.ErrorObject.ERRORLEVEL1,
@@ -74,14 +68,13 @@ def get_competitor_rating(filter_competitor_dhb_scr):
         obj_error.append_to_error_list(str(error_msg))
         obj_error.write_error_logs(datetime.datetime.now())
 
-
 if __name__ == '__main__':
     a = {
         'region': [],
         'country': [],
         'pos': [],
-        'origin': ['DOH'],
-        'destination': ['DXB'],
+        'origin': ['DXB'],
+        'destination': ['DOH'],
         "compartment": [],
         'fromDate': '2016-10-01',
         'toDate': '2017-03-01'

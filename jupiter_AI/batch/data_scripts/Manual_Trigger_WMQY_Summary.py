@@ -2783,6 +2783,6 @@ if __name__ == '__main__':
     pos_list = db.JUP_DB_Manual_Triggers_Module_Summary.distinct('pos.City')
     for each_market in pos_list:
         main(each_market, client)
-        pass
-        print each_market
+        # pass
+        # print each_market
     # main("CMB")

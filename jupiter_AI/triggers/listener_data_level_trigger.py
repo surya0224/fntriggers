@@ -36,7 +36,6 @@ def trigger_desc_list(db):
     trigger_desc_list_data = []
     query = []
     cursor = db.JUP_DB_Trigger_Types.find()
-    print "pooooo"
     for trigger_doc in cursor:
         del trigger_doc['_id']
         query.append(trigger_doc)

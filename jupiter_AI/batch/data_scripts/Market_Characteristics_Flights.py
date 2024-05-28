@@ -81,17 +81,12 @@ date2_ms = datetime.now()
 @measure(JUPITER_LOGGER)
 def main(client):
     db = client[JUPITER_DB]
-    doc = db.JUP_DB_Market_Characteristics_Flights.distinct("snap_date")
-    str_date = doc[len(doc) - 1]
-    new_doc = db.JUP_DB_Market_Characteristics_Flights.distinct("dep_date",{"snap_date":str_date})
-    dep_date_end = new_doc[len(new_doc) - 1]
-    dep_date_start= new_doc[len(new_doc) - len(new_doc)]
     pipeline = [
-     {"$match": {"dep_date": {"$gte": dep_date_start,"$lte": dep_date_end}}},
+    {"$match":{"dep_date": {"$gte":dep_date_start,"$lte":dep_date_end}}},
 
-     {"$sort": {'origin': 1, "destination": 1, "od": 1, "compartment": 1, "flight_number": 1, "dep_date": 1, "snap_date": -1}},
+    {"$sort":{'origin': 1, "destination": 1, "od": 1, "compartment": 1, "flight_number": 1, "dep_date": 1, "snap_date": -1}},
 
-     {"$group": {
+    {"$group":{
         "_id": {
             "origin": '$origin',
             "destination": '$destination',
@@ -100,14 +95,14 @@ def main(client):
             "dep_date": '$dep_date'
         },
 
-        "pax":  {"$first": '$pax'},
-        "pax_1": {"$first": '$pax_1'},
-        "bookings": {"$first": '$bookings'},
-        "bookings_1": {"$first": '$bookings_1'},
-        "forecast_pax": {"$first": '$pax_forecast'},
-        "forecast_pax_1": {"$first": '$pax_forecast_1'},
-        "capacity": {"$first": '$capacity'},
-        "capacity_1": {"$first": '$capacity_1'},
+        "pax": {"$first":'$pax'},
+        "pax_1":{"$first":'$pax_1'},
+        "bookings":{"$first":'$bookings'},
+        "bookings_1":{"$first":'$bookings_1'},
+        "forecast_pax":{"$first":'$pax_forecast'},
+        "forecast_pax_1":{"$first":'$pax_forecast_1'},
+        "capacity":{"$first":'$capacity'},
+        "capacity_1":{"$first":'$capacity_1'},
     }},
 
     {"$group":{
@@ -117,32 +112,32 @@ def main(client):
             "compartment": '$_id.compartment',
             "dep_date": '$_id.dep_date'
         },
-        "pax": {"$sum": '$pax'},
-        "pax_1": {"$sum": '$pax_1'},
-        "bookings": {"$sum": '$bookings'},
-        "bookings_1": {"$sum": '$bookings_1'},
-        "forecast_pax": {"$sum": '$forecast_pax'},
-        "forecast_pax_1": {"$sum": '$forecast_pax_1'},
-        "capacity": {"$sum": '$capacity'},
-        "capacity_1": {"$sum": '$capacity_1'},
+        "pax": {"$sum":'$pax'},
+        "pax_1":{"$sum":'$pax_1'},
+        "bookings":{"$sum":'$bookings'},
+        "bookings_1":{"$sum":'$bookings_1'},
+        "forecast_pax":{"$sum":'$forecast_pax'},
+        "forecast_pax_1":{"$sum":'$forecast_pax_1'},
+        "capacity":{"$sum":'$capacity'},
+        "capacity_1":{"$sum":'$capacity_1'},
     }}
     ]
 
-    cursor = db.JUP_DB_Market_Characteristics_Flights.aggregate(pipeline, allowDiskUse = True)
+    cursor = db.JUP_DB_Market_Characteristics_Flights.aggregate(pipeline,allowDiskUse = True)
 
-    num = 1
+    num = 1;
     bulk1 = db.JUP_DB_Flight_Leg_Characteristics.initialize_unordered_bulk_op()
     for x in cursor:
         dateformat = '%Y-%m-%d'
         dep_date_ISO = datetime.strptime(x['_id']["dep_date"], dateformat)
 
-        od = x['_id']["origin"] + x['_id']["destination"]
-        combine_column = od + x['_id']["compartment"] +  x['_id']["dep_date"];
+        od = x['_id']["origin"] + "" + x['_id']["destination"];
+        combine_column = od + "" + x['_id']["compartment"] + "" + x['_id']["dep_date"];
         try:
             bulk1.find({
-                "dep_date": x['_id']['dep_date'],
-                'od': od,
-                'compartment': x['_id']['compartment'],
+                "dep_date":x['_id']['dep_date'],
+                'od':od,
+                'compartment':x['_id']['compartment'],
             }).upsert().update(
                 {
             "$set":{
@@ -165,8 +160,8 @@ def main(client):
             }
             )
 
-            if num % 100 == 0:
-                try:
+            if((num % 100) == 0):
+                try :
                     bulk1.execute()
                     bulk1 = db.JUP_DB_Flight_Leg_Characteristics.initialize_unordered_bulk_op()
                 except BulkWriteError as bwe:
@@ -176,10 +171,12 @@ def main(client):
 
         num = num + 1
 
-    try:
-        bulk1.execute()
+    try :
+        bulk1.execute();
     except Exception as error:
         print error
 
 
-main(client)
+if __name__ == '__main__':
+    db = client[JUPITER_DB]
+    main(client)

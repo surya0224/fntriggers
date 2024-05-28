@@ -23,7 +23,6 @@ from dateutil.relativedelta import relativedelta
 from jupiter_AI.batch.atpco_automation.daily_log_mail import send_mail, error_mail,send_mail_error_format
 from jupiter_AI import mongo_client
 import pandas as pd
-import json
 from collections import defaultdict
 from itertools import chain, islice
 from jupiter_AI.network_level_params import JUPITER_DB, JUPITER_LOGGER, SYSTEM_DATE, today, INF_DATE_STR
@@ -79,9 +78,7 @@ def get_trigger_config_dates(sig_flag, db):
                 for j in date_cur:
                     if j['from_date'] < SYSTEM_DATE < j['to_date']:
                         j['from_date'] = SYSTEM_DATE
-                    dates_list.append({'start': j['from_date'][:10], 'end': j['to_date'][:10], 'code_list': j['code_list']})
-    # dates_list.append({'start': j['from_date'], 'end': j['to_date'], 'code_list': j['code_list']})
-    # dates_list=[{'start': '2023-06-01', 'end': '2023-06-30', 'code_list': 'M062023'}]
+                    dates_list.append({'start': j['from_date'], 'end': j['to_date'], 'code_list': j['code_list']})
     return dates_list
 
 

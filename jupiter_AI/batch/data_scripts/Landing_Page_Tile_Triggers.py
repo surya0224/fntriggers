@@ -361,7 +361,7 @@ def main(user, comp_each, client):
         # curr_month = '0' + str(curDay.month -1 + (num))[-2:]
         try:
             # print(queryBuilder['$or'])
-
+            
             curr_year = datetime.strftime(dt_range, '%Y')
             str_date = curr_year+'-'+curr_month+'-'+curr_date
             cursor = db.get_collection('JUP_DB_Workflow').find({'$or': queryBuilder['$or'], "update_date" : str_date},{"triggering_event_date" : 1,"recommendation_category" : 1,"status" :1,"od" :1,"pos" :1,"compartment" :1,"type_of_trigger":1, "trigger_type":1,"action_date" : 1, "action_time" : 1,"triggering_event_time" : 1, "type" : 1})
@@ -703,14 +703,14 @@ def main(user, comp_each, client):
                                 {
                                 'pos': None
                                 },
-                            'pax': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline', 'AI']},{'$ne':['$pax', None]}]}, '$pax', 0]}},
-                            'market_size': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline','AI']},{'$ne': ['$market_size', None]}]}, '$market_size',0]}},
-                            'pax_1': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline','AI']}, {'$ne': ['$pax_1', None]}]}, '$pax_1',0]}},
-                            'market_size_1': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline','AI']}, {'$ne': ['$market_size_1', None]}]}, '$market_size_1',0]}},
-                            'capacity_rating_FZ': {'$sum': {'$cond': [{'$eq': ['$airline','AI']}, '$capacity_rating',0]}},
+                            'pax': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline', 'FZ']},{'$ne':['$pax', None]}]}, '$pax', 0]}},
+                            'market_size': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline','FZ']},{'$ne': ['$market_size', None]}]}, '$market_size',0]}},
+                            'pax_1': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline','FZ']}, {'$ne': ['$pax_1', None]}]}, '$pax_1',0]}},
+                            'market_size_1': {'$sum': {'$cond': [{'$and': [{'$eq': ['$airline','FZ']}, {'$ne': ['$market_size_1', None]}]}, '$market_size_1',0]}},
+                            'capacity_rating_FZ': {'$sum': {'$cond': [{'$eq': ['$airline','FZ']}, '$capacity_rating',0]}},
                             'capacity_rating_total': {'$sum': '$capacity_rating'},
-                            'host_capacity': {'$sum': {'$cond': [{'$eq': ['$airline', 'AI']}, '$capacity', 0]}},
-                            'host_rating': {'$sum': {'$cond': [{'$eq': ['$airline', 'AI']}, '$rating', 0]}},
+                            'host_capacity': {'$sum': {'$cond': [{'$eq': ['$airline', 'FZ']}, '$capacity', 0]}},
+                            'host_rating': {'$sum': {'$cond': [{'$eq': ['$airline', 'FZ']}, '$rating', 0]}},
                             # 'comp_capacity': {'$sum': {'$cond': [{'$eq': ['$airline', 'FZ']}, 0, '$capacity']}},
                             'comp_capacity': {'$sum': '$capacity'},
                             # 'comp_rating': {'$sum': {'$cond': [{'$eq': ['$airline', 'FZ']},0, '$rating']}},
@@ -1119,17 +1119,17 @@ def main(user, comp_each, client):
         num = num + 1
 
 if __name__ == '__main__':
-    # db = client[JUPITER_DB]
-    # user_list = list(db.JUP_DB_User.distinct('name', {'cluster' : {'$ne' : 'network'},'active':True}))
-    # network_user = db.JUP_DB_User.find_one({'cluster' : {'$eq' : 'network'},'active':True})
-    # user_list.append(network_user['name'])
-    # comp = db.JUP_DB_Booking_Class.distinct("comp")
-    # comp.append('TL')
-    # # for each_user in user_list:
-    #    for each_comp in comp:
-    #        print(each_user+" "+each_comp)
-    #        main(each_user, each_comp,client)
-    main('Vishnu', 'TL', client)
-    main('Vishnu', 'Y', client)
-    main('Vishnu', 'J', client)
+    db = client[JUPITER_DB]
+    user_list = list(db.JUP_DB_User.distinct('name', {'cluster' : {'$ne' : 'network'},'active':True}))
+    network_user = db.JUP_DB_User.find_one({'cluster' : {'$eq' : 'network'},'active':True})
+    user_list.append(network_user['name'])
+    comp = db.JUP_DB_Booking_Class.distinct("comp")
+    comp.append('TL')
+    for each_user in user_list:
+       for each_comp in comp:
+           print(each_user+" "+each_comp)
+           main(each_user, each_comp,client)
+    #main('Europa_CMB', 'TL', client)
+    #main('Europa_CMB', 'Y', client)
+    #main('Europa_CMB', 'J', client)
 

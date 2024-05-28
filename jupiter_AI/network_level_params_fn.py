@@ -1,3 +1,4 @@
+# NETWORK_LEVEL_PARAMETERS LIST
 import logging
 import os
 import datetime
@@ -10,28 +11,29 @@ import pymongo
 from copy import deepcopy
 from datetime import date
 
-ENV = 'Dev'
+ENV = 'Staging'
 NOTIFICATION_EMAIL = 'analytics@flynava.com'
 MAX_TRIGGER_PRIORITY_LEVEL = 9
-MONGO_CLIENT_URL = '13.235.142.242:27012'
-ANALYTICS_MONGO_USERNAME = 'data.FN'
-ANALYTICS_MONGO_PASSWORD = 'data@123'
+MONGO_CLIENT_URL = '172.28.23.5:27022'
+ANALYTICS_MONGO_USERNAME = 'pdssETLUser'
+ANALYTICS_MONGO_PASSWORD = 'pdssETL@123'
 MONGO_SOURCE_DB = 'admin'
 JUPITER_DB = 'fzDB_prod'
 ATPCO_DB = 'ATPCO_prod'
-RABBITMQ_HOST = '13.235.142.242'
-RABBITMQ_PORT = 5672
-RABBITMQ_USERNAME = 'guest'
-RABBITMQ_PASSWORD = 'guest'
-JAVA_URL = "http://13.235.125.244:8080/jupiter/getManualTriggers"
-JAVA_LP_URL = "http://13.235.125.244:8080/jupiter/runLandingPageScript"
+RABBITMQ_HOST = '172.28.23.8'
+RABBITMQ_PORT = 4324
+RABBITMQ_USERNAME = 'sai'
+RABBITMQ_PASSWORD = 'dl6cd1357'
+JAVA_URL = "http://172.28.23.8:9292/jupiter/getManualTriggers"
+JAVA_LP_URL = "http://172.28.23.8:9292/jupiter/runLandingPageScript"
 SECURITY_CLIENT_ID = 'pdss'
 SECURITY_CLIENT_SECRET_ID = '386667c1-0528-40b3-9054-2a3215742dbd'
 AUTH_URL = 'https://smartrez.flydubai.com/smartrez-gateway/security/createServiceToken'
 MAIL_URL = 'https://smartrez.flydubai.com/smartrez-gateway/smartrezmail/mail/send'
-MAIL_RECEIVERS = ["fz_support@flynava.com"]
-# MAIL_RECEIVERS = ["abhinav.garg@flydubai.com", "tulsi.choudhary@flydubai.com", "somya.tomar@flydubai.com"]
-PYTHON_PATH = 'C:/Users/birba/PycharmProjects/jupiter-python/'
+MAIL_RECEIVERS = ["Shameer.Koya@flydubai.com", "L.Kumarasamy@flydubai.com", "Sharad.K.ext@flydubai.com",
+                  "fz_support@flynava.com", "rm.itappsupport@flydubai.com",
+                  "Dinesh.Kotwani.ext@flydubai.com"]
+PYTHON_PATH = '/app/python/analytics/'
 Host_Airline_Code = 'FZ'
 Currency_List = ['GBP', 'AED', 'INR', 'USD']
 Host_Airline_Hub = 'DXB'
@@ -73,7 +75,7 @@ def get_jupiter_logger():
     logger.setLevel(logging.INFO)
     # self.args = " ".join(args)
     # self.kwargs = ";".join(['{}-{}'.format(k, v) for k, v in kwargs.items()])
-    handler = logging.FileHandler(os.path.join(os.path.dirname(PYTHON_PATH + 'logs/'),
+    handler = logging.FileHandler(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                'logger_{}.log'.format(
                                                    datetime.datetime.strftime(datetime.datetime.now(),
                                                                               "%d_%m_%Y"))))
@@ -118,3 +120,5 @@ def query_month_year_builder(stdm, stdy, endm, endy):
                 m = 12
                 y -= 1
         return month_year
+
+

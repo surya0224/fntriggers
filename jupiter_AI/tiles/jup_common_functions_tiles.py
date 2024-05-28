@@ -94,8 +94,7 @@ def gen_collection_name():
         random_string = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(8))
         user_name = get_user_name()
         if user_name == '':
-            user_name = "Vishnu"
-            # raise Exception("Collection name not generated. Check if credentials.txt exists")
+            raise Exception("Collection name not generated. Check if credentials.txt exists")
         collection_name = 'JUP_Temp_' + user_name + '_' + time_stamp +'_'+ random_string
         return collection_name
     except Exception as err_msg:

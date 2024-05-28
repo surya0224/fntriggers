@@ -267,7 +267,7 @@ class SignificantOD(Factor):
             else:
                 return False
         else:
-            return True
+            return False
 
     @measure(JUPITER_LOGGER)
     def check_consideration(self, db):

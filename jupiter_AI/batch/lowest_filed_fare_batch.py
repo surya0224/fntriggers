@@ -1998,5 +1998,5 @@ if __name__ == '__main__':
     # group2 = group(lff)
     # res2 = group2()
     client = mongo_client()
-    update_market('DEL','DEL','YVR','Y', client)
+    update_market('CMB','CMB','DXB','Y', client)
     client.close()

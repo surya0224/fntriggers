@@ -1,4 +1,4 @@
-77777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777"""
+"""
 Author: Abhinav Garg
 Created with <3
 Date Created: 2018-03-07
@@ -59,7 +59,7 @@ def yqyr(system_date, file_time):
 
     file_date = datetime.datetime.strftime(sysdate, "%Y%m%d")
 
-1    coll = db.JUP_DB_ATPCO_Fares_Rules
+    coll = db.JUP_DB_ATPCO_Fares_Rules
     od_list = {}
     cxr = coll.distinct('carrier', {'file_date': file_date, 'file_time' : {"$in" : file_time}})
     # cxr=["WY"]
@@ -89,22 +89,17 @@ def yqyr(system_date, file_time):
             origin = OD[:3]
             destination = OD[3:]
 
-            curz = db.JUP_DB_ATPCO_Zone_Master.find({"CITY_CODE": {"$in": [origin]}})
+            curz = db.JUP_DB_ATPCO_Zone_Master.find({"CITY_CODE": {"$in": [origin, destination]}})
             for j in curz:
                 if j["CITY_CODE"] == origin:
                     origin_area = j["CITY_AREA"]
                     origin_zone = j["CITY_ZONE"]
                     origin_country = j["CITY_CNTRY"]
-            curz1=db.JUP_DB_ATPCO_Zone_Master.find({"CITY_CODE": {"$in": [destination]}})
 
-            for j in curz1:
-
-
-                if  j["CITY_CODE"] == destination:
+                elif j["CITY_CODE"] == destination:
                     destination_area = j["CITY_AREA"]
                     destination_zone = j["CITY_ZONE"]
                     destination_country = j["CITY_CNTRY"]
-
 
             carrier_od.append(run_yqyr.s(system_date=system_date, file_time=file_time, carrier=[carrier], OD=[OD],hub= hub,hub_area= hub_area,hub_country= hub_country,hub_zone= hub_zone, origin_area=origin_area,
                                          origin_country=origin_country, origin_zone=origin_zone, destination_area=destination_area,destination_country= destination_country,destination_zone= destination_zone))
@@ -352,7 +347,7 @@ def run_at_file_date_change(system_date, file_time):
             # tariffs_record_2_cat_3_fn=db1.JUP_DB_ATPCO_Record_2_Cat_03_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
             # tariffs_record_2_cat_11_fn=db1.JUP_DB_ATPCO_Record_2_Cat_11_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
             # tariffs_record_2_cat_14_fn=db1.JUP_DB_ATPCO_Record_2_Cat_14_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
-            # tariffs_record_2_cat_15_fn=db1.JUP_DB_ATPCO_Record_2_Cat_15_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})l
+            # tariffs_record_2_cat_15_fn=db1.JUP_DB_ATPCO_Record_2_Cat_15_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
             # tariffs_record_2_cat_23_fn=db1.JUP_DB_ATPCO_Record_2_Cat_23_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
             # tariffs_record_2_cat_10_fn=db1.JUP_DB_ATPCO_Record_2_Cat_10_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
             # tariffs_record_2_cat_25_fn=db1.JUP_DB_ATPCO_Record_2_Cat_25_FN.distinct( "TARIFF",{ "LAST_UPDATED_DATE":system_date})
@@ -1037,11 +1032,11 @@ if __name__ == '__main__':
                 received_msg = json.loads(message.body.decode('utf8'))
                 print "Received correct message from atpco_connector: ", received_msg
                 print 'Starting atpco_automation'
+                YESTERDAY = (today - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 TODAY_ = SYSTEM_DATE
-				File_Time=TIME
                 ## Control check for today or yester day file date only we have to run by today
-                if received_msg[ 'file_time'] == Time or received_msg['file_date'] == TODAY_:
-
+                if received_msg[ 'file_date'] == YESTERDAY or received_msg['file_date'] == TODAY_:
+                    '''
                     #---------------------------------------------------------------------------------------
                     ## Daily run only
                     try:
@@ -1158,11 +1153,9 @@ if __name__ == '__main__':
                             print mail_group.get()
     
                             break
-
-                    
-
-                    ## Hourly processing
                     '''
+                    ## Hourly processing
+                    # '''
                     # ---------------------------------------------------------------------------------------
                         ## decision making of what time entire process and what time part of the script should run
                         ##
@@ -1200,7 +1193,7 @@ if __name__ == '__main__':
                         # message.ack()
                     elif (time_in_range(datetime.time(int(ATPCO_processing_hour['run_2']['start']), 0, 0), datetime.time(int(ATPCO_processing_hour['run_2']['end']), 0, 0), datetime.time(int(file_time), 0, 0))):
                         hours.append(int(file_time))
-                    run_atpco_automation(SYSTEM_DATE_1, file_time)
+                        run_atpco_automation(SYSTEM_DATE_1, file_time)
                         list_hour.append(file_time)
                         # message.ack()
                     if(int(file_time) == int(ATPCO_processing_hour['run_2']['end'])):
@@ -1309,14 +1302,9 @@ if __name__ == '__main__':
                                                                        rules_vol=rules_volume)])()
                             print mail_group.get()
                         break
-                        
-                  '''
-
+                    # '''
                 else:
                     print "Received wrong message from atpco_connector: ", received_msg
                     message.ack()
 
     print 'Done ATPCO for today:', SYSTEM_DATE, file_time
-	
-	
-	 { 'message': 'atpco_connector_2021-03-23', 'file_date': '2021-03-23', u'file_time': '20','system_date': '2021-03-24'}

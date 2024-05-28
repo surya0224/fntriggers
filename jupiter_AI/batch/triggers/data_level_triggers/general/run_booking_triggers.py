@@ -131,69 +131,69 @@ def generate_booking_triggers(
         obj_error.append_to_error_list(str(error_msg))
         obj_error.write_error_logs(datetime.datetime.now())
 
-    # try:
-    #     print "BKR"
-    #     st = time.time()
-    #     bkrl_triggers = generate_booking_changes_rolling_triggers(pos=pos,
-    #                                                               origin=origin,
-    #                                                               destination=destination,
-    #                                                               compartment=compartment,
-    #                                                               data_list=data_list,
-    #                                                               db=db,
-    #                                                               sig_flag=sig_flag)
-    #     TRIGGERS = TRIGGERS + bkrl_triggers
-    #     print"2: ", time.time() - st
-    # except Exception as error_msg:
-    #     print traceback.print_exc()
-    #
-    #     module_name = ''.join(
-    #         [
-    #             'jupiter_AI/batch/triggers/data_level_triggers/general/daily.py ',
-    #             'method: run:booking_changes_rolling::',
-    #             pos,
-    #             '/',
-    #             origin,
-    #             '/',
-    #             destination,
-    #             '/',
-    #             compartment])
-    #     obj_error = ErrorObject(ErrorObject.ERRORLEVEL1,
-    #                             module_name,
-    #                             get_arg_lists(inspect.currentframe()))
-    #     obj_error.append_to_error_list(str(error_msg))
-    #     obj_error.write_error_logs(datetime.datetime.now())
-    #
-    # try:
-    #     print "BKVLYR"
-    #     st = time.time()
-    #     bkvl_triggers = generate_booking_changes_vlyr_triggers(pos=pos,
-    #                                                            origin=origin,
-    #                                                            destination=destination,
-    #                                                            compartment=compartment,
-    #                                                            data_list=data_list,
-    #                                                            db=db,
-    #                                                            sig_flag=sig_flag)
-    #     TRIGGERS = TRIGGERS + bkvl_triggers
-    #     print "3: ", time.time() - st
-    # except Exception as error_msg:
-    #     print traceback.print_exc()
-    #
-    #     module_name = ''.join(
-    #         [
-    #             'jupiter_AI/batch/triggers/data_level_triggers/general/daily.py ',
-    #             'method: run:booking_changes_VLYR::',
-    #             pos,
-    #             '/',
-    #             origin,
-    #             '/',
-    #             destination,
-    #             '/',
-    #             compartment])
-    #     obj_error = ErrorObject(ErrorObject.ERRORLEVEL1,
-    #                             module_name,
-    #                             get_arg_lists(inspect.currentframe()))
-    #     obj_error.append_to_error_list(str(error_msg))
-    #     obj_error.write_error_logs(datetime.datetime.now())
+    try:
+        print "BKR"
+        st = time.time()
+        bkrl_triggers = generate_booking_changes_rolling_triggers(pos=pos,
+                                                                  origin=origin,
+                                                                  destination=destination,
+                                                                  compartment=compartment,
+                                                                  data_list=data_list,
+                                                                  db=db,
+                                                                  sig_flag=sig_flag)
+        TRIGGERS = TRIGGERS + bkrl_triggers
+        print"2: ", time.time() - st
+    except Exception as error_msg:
+        print traceback.print_exc()
+
+        module_name = ''.join(
+            [
+                'jupiter_AI/batch/triggers/data_level_triggers/general/daily.py ',
+                'method: run:booking_changes_rolling::',
+                pos,
+                '/',
+                origin,
+                '/',
+                destination,
+                '/',
+                compartment])
+        obj_error = ErrorObject(ErrorObject.ERRORLEVEL1,
+                                module_name,
+                                get_arg_lists(inspect.currentframe()))
+        obj_error.append_to_error_list(str(error_msg))
+        obj_error.write_error_logs(datetime.datetime.now())
+
+    try:
+        print "BKVLYR"
+        st = time.time()
+        bkvl_triggers = generate_booking_changes_vlyr_triggers(pos=pos,
+                                                               origin=origin,
+                                                               destination=destination,
+                                                               compartment=compartment,
+                                                               data_list=data_list,
+                                                               db=db,
+                                                               sig_flag=sig_flag)
+        TRIGGERS = TRIGGERS + bkvl_triggers
+        print "3: ", time.time() - st
+    except Exception as error_msg:
+        print traceback.print_exc()
+
+        module_name = ''.join(
+            [
+                'jupiter_AI/batch/triggers/data_level_triggers/general/daily.py ',
+                'method: run:booking_changes_VLYR::',
+                pos,
+                '/',
+                origin,
+                '/',
+                destination,
+                '/',
+                compartment])
+        obj_error = ErrorObject(ErrorObject.ERRORLEVEL1,
+                                module_name,
+                                get_arg_lists(inspect.currentframe()))
+        obj_error.append_to_error_list(str(error_msg))
+        obj_error.write_error_logs(datetime.datetime.now())
     # try:
     #     print "BKVTGT"
     #     st = time.time()
@@ -428,78 +428,33 @@ if __name__ == '__main__':
     client = mongo_client()
     db= client[JUPITER_DB]
 
-    run(markets=[
-
-    "DELDELBOGJ",
-    "DELDELBOGY",
-    "DELDELCHIJ",
-    "DELDELCHIY",
-    "DELDELEWRJ",
-    "DELDELEWRY",
-    "DELDELJEDJ",
-    "DELDELJEDY",
-    "DELDELJFKJ",
-    "DELDELJFKY",
-    "DELDELJKTJ",
-    "DELDELJKTY",
-    "DELDELKULJ",
-    "DELDELKULY",
-    "DELDELMNLJ",
-    "DELDELMNLY",
-    "DELDELSALJ",
-    "DELDELSALY",
-    "DELDELSFOJ",
-    "DELDELSFOY",
-    "DELDELTPEJ",
-    "DELDELTPEY",
-    "DELDELTYOJ",
-    "DELDELTYOY",
-    "DELDELWASJ",
-    "DELDELWASY",
-    "DELDELYHZJ",
-    "DELDELYHZY",
-    "DELDELYMQJ",
-    "DELDELYMQY",
-    "DELDELYOWJ",
-    "DELDELYOWY",
-    "DELDELYTOJ",
-    "DELDELYTOY",
-    "DELDELYVRJ",
-    "DELDELYVRY",
-    "DELDELYYCJ",
-    "DELDELYYCY",
-    "DELDELYYZJ",
-    "DELDELYYZY"
-
-]
-
-, db=db, sig_flag='sig')
+    run(markets=['UAEDXBPZUY'], db=db, sig_flag='sub_sig')
     import sys
     client.close()
     sys.exit()
     # TEMPORARY BLOCK TO CLEAR WORKFLOW AND WORKFLOW_OD_USER
-    # st = time.time()
-    # print "Running Data Level Triggers"
-    # online_mrkts = db.JUP_DB_Market_Significance.aggregate([
-    #     {"$match": {"online": True}},
-    #     {"$sort": {"rank": -1}},
-    #     {"$group": {"_id": {"market": "$market"}}},
-    #     {"$project": {"_id": 0, "market": "$_id.market"}}])
-    #
-    # online_mrkts = list(online_mrkts)
-    #
-    # counter = 0
-    # trigger_group = []
-    # markets = []
-    # for mrkt in online_mrkts:
-    #     if counter == 100:
-    #         run(markets)
-    #         markets.append(mrkt['market'])
-    #         counter = 1
-    #     else:
-    #         markets.append(mrkt['market'])
-    #         counter += 1
-    # if counter > 0:
-    #     run(markets)
-    # print 'Total Time Taken', time.time() - st
-    # client.close()
+    st = time.time()
+    print "Running Data Level Triggers"
+    online_mrkts = db.JUP_DB_Market_Significance.aggregate([
+        {"$match": {"online": True}},
+        {"$sort": {"rank": -1}},
+        {"$group": {"_id": {"market": "$market"}}},
+        {"$project": {"_id": 0, "market": "$_id.market"}}])
+
+    online_mrkts = list(online_mrkts)
+
+    counter = 0
+    trigger_group = []
+    markets = []
+    for mrkt in online_mrkts:
+        if counter == 100:
+            run(markets)
+            markets.append(mrkt['market'])
+            counter = 1
+        else:
+            markets.append(mrkt['market'])
+            counter += 1
+    if counter > 0:
+        run(markets)
+    print 'Total Time Taken', time.time() - st
+    client.close()

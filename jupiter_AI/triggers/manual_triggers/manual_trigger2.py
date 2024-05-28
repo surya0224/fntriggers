@@ -903,12 +903,8 @@ def fare_brand_creation():
                             # print doc_['rbd'], doc_['fbc'], doc_['channel'], doc_['farebrand'], doc_['channel_fb']
                             # To avoid any other fare brands then usual fare brands
                             tt = int(doc_['channel_fb'])
-                            try:
-                                if doc_["owRt"] == "1":
-                                    base_fb_rbd_dict_ow.update({doc_['rbd']: doc_})
-                            except:
-                                if doc_["ow_rt"] == "1":
-                                    base_fb_rbd_dict_ow.update({doc_['rbd']: doc_})
+                            if doc_["ow_rt"] == "1":
+                                base_fb_rbd_dict_ow.update({doc_['rbd']: doc_})
                             else:
                                 base_fb_rbd_dict_rt.update({doc_['rbd']: doc_})
 
@@ -971,7 +967,7 @@ def fare_brand_creation():
                         #     base_fb_rbd_dict.update({doc_['rbd']: doc_})
 
                 except ValueError as error:
-                    # print errordoc["owRt"]doc["owRt"]
+                    # print error
                     pass
 
             ow_update_fares = dict()
@@ -1154,36 +1150,22 @@ def fare_brand_creation():
             for doc in res[each_fare]:
                 # compartment
                 base_local_currency = doc["currency"]
-                try:
-                    if doc['od_distance'] == 0:
-                        doc['od_distance'] = 1
-                except:
-                    if doc['odDistance'] == 0:
-                        doc['odDistance'] = 1
+                if doc['od_distance'] == 0:
+                    doc['od_distance'] = 1
 
                 # print "delta", str(delta)
                 if markets['screen'] == "workflow":
                     # print("loop start")
                     channel, farebrand = get_fare_brand_and_channel_from_fbc(doc['fbc'],
                                                                              fbc_standardation[0]["position_array"])
-                    try:
-                        if doc["owRt"] == "1":
-                            try:
-                                fare = ow_update_fares[doc['rbd']][channel + " " + farebrand] / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_ow[doc['rbd']]]
-                                fee_detail = ow_update_add_on[doc['rbd']]
-                            except KeyError as error:
-                                print error
-                                fare = doc['fare']
-                                fee_detail = []
-                    except:
-                        if doc["owrt"] == "1":
-                            try:
-                                fare = ow_update_fares[doc['rbd']][channel + " " + farebrand] / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_ow[doc['rbd']]]
-                                fee_detail = ow_update_add_on[doc['rbd']]
-                            except KeyError as error:
-                                print error
-                                fare = doc['fare']
-                                fee_detail = []
+                    if doc["owrt"] == "1":
+                        try:
+                            fare = ow_update_fares[doc['rbd']][channel + " " + farebrand] / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_ow[doc['rbd']]]
+                            fee_detail = ow_update_add_on[doc['rbd']]
+                        except KeyError as error:
+                            print error
+                            fare = doc['fare']
+                            fee_detail = []
                     else:
                         try:
                             fare = rt_update_fares[doc['rbd']][channel + " " + farebrand] / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_rt[doc['rbd']]]
@@ -1207,15 +1189,8 @@ def fare_brand_creation():
                                 # fare - doc['currentYQ'] - doc['currentSurcharges']})
                     doc.update({'recoTotalFare' : round(base_fare + doc["currentYR"] + doc['currentYQ'] + doc['currentSurcharges'] + doc['currentTax'],1)})
                     doc.update({'recmndFare' : round(base_fare + doc['currentYQ'] + doc['currentYR'] + doc['currentSurcharges'], 1)})
-                    try:
-                        doc.update({'recmndYield' : round((((base_fare + doc['currentYQ'] + doc['currentYR'] + doc['currentSurcharges'])/ EXCHANGE_RATE["AED"] *
+                    doc.update({'recmndYield' : round((((base_fare + doc['currentYQ'] + doc['currentYR'] + doc['currentSurcharges'])/ EXCHANGE_RATE["AED"] *
                                                         EXCHANGE_RATE[doc["currency"]]) / doc['od_distance']) * 100, 1)})
-                    except:
-                        doc.update({'recmndYield': round((((base_fare + doc['currentYQ'] + doc['currentYR'] + doc[
-                            'currentSurcharges']) / EXCHANGE_RATE["AED"] *
-                                                           EXCHANGE_RATE[doc["currency"]]) / doc['odDistance']) * 100,
-                                                         1)})
-
                     doc.update({'fee_detail' : fee_detail})
                     fare_doc.append(doc)
 
@@ -1224,25 +1199,14 @@ def fare_brand_creation():
                     channel, farebrand = get_fare_brand_and_channel_from_fbc(doc['fbc'],
                                                                              fbc_standardation[0]["position_array"])
 
-                    try:
-                        if doc["owRt"] == "1":
-                            try:
-                                fare = ow_update_fares[doc['rbd']][channel + " " + farebrand]  / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_ow[doc['rbd']]]
-                                fee_detail = ow_update_add_on[doc['rbd']]
-                            except KeyError as error:
-                                print error
-                                fare = doc['fare']
-                                fee_detail = []
-                    except:
-                        if doc["ow_rt"] == "1":
-                            try:
-                                fare = ow_update_fares[doc['rbd']][channel + " " + farebrand] / EXCHANGE_RATE[
-                                    doc["currency"]] * EXCHANGE_RATE[base_local_currency_ow[doc['rbd']]]
-                                fee_detail = ow_update_add_on[doc['rbd']]
-                            except KeyError as error:
-                                print error
-                                fare = doc['fare']
-                                fee_detail = []
+                    if doc["ow_rt"] == "1":
+                        try:
+                            fare = ow_update_fares[doc['rbd']][channel + " " + farebrand]  / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_ow[doc['rbd']]]
+                            fee_detail = ow_update_add_on[doc['rbd']]
+                        except KeyError as error:
+                            print error
+                            fare = doc['fare']
+                            fee_detail = []
                     else:
                         try:
                             fare = rt_update_fares[doc['rbd']][channel + " " + farebrand] / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[base_local_currency_rt[doc['rbd']]]
@@ -1267,41 +1231,25 @@ def fare_brand_creation():
                         #     _update_delta_val_ow[doc["rbd"]]['base_fare'])
                         # print doc_["selected_fare"]
                         if delta_type == "P" and doc["selected_fare"] == True:
-                            try:
-                                if doc["owRt"] == "1":
-                                    base_fare = _update_delta_val_ow[doc["rbd"]]['delta'] + _update_delta_val_ow[doc["rbd"]]['base_fare']
-                            except:
-                                if doc["ow_rt"] == "1":
-                                    base_fare = _update_delta_val_ow[doc["rbd"]]['delta'] + _update_delta_val_ow[doc["rbd"]]['base_fare']
+                            if doc["ow_rt"] == "1":
+                                base_fare = _update_delta_val_ow[doc["rbd"]]['delta'] + _update_delta_val_ow[doc["rbd"]]['base_fare']
                             else:
                                 base_fare =_update_delta_val_rt[doc["rbd"]]['delta'] + _update_delta_val_rt[doc["rbd"]]['base_fare']
                     else:
                         # print str(_update_delta_val_ow[doc["rbd"]]['delta']) + " " + str(_update_delta_val_ow[doc["rbd"]]['base_fare'])
                         if delta_type == "P" and  base_fare_channel+" "+ base_fare_brand == channel + " " + farebrand:
-                            try:
-                                if doc["owRt"] == "1":
+                            if doc["ow_rt"] == "1":
 
-                                    base_fare = _update_delta_val_ow[doc["rbd"]]['delta'] + \
-                                            _update_delta_val_ow[doc["rbd"]]['base_fare']
-                            except:
-                                if doc["ow_rt"] == "1":
-
-                                    base_fare = _update_delta_val_ow[doc["rbd"]]['delta'] + \
+                                base_fare = _update_delta_val_ow[doc["rbd"]]['delta'] + \
                                             _update_delta_val_ow[doc["rbd"]]['base_fare']
                             else:
                                 base_fare = _update_delta_val_rt[doc["rbd"]]['delta'] + \
                                             _update_delta_val_rt[doc["rbd"]]['base_fare']
                     # _update_delta_val['key']['ow']['delta']
                     # _update_delta_val['key']['ow']['basefare']
-                    try:
-                        yield_ = round(((((
+                    yield_ = round(((((
                         base_fare + doc['yq'] + doc['yr'] + doc['surcharge']) / EXCHANGE_RATE["AED"] *
                                                         EXCHANGE_RATE[doc["currency"]]) / doc['od_distance']) * 100), 1)
-                    except:
-                        yield_ = round(((((
-                                                  base_fare + doc['yq'] + doc['yr'] + doc['surcharge']) / EXCHANGE_RATE[
-                                              "AED"] *
-                                          EXCHANGE_RATE[doc["currency"]]) / doc['odDistance']) * 100), 1)
                     # doc['recyield'] = yield_
                     # doc['updateBaseFare'] = fare
                     # print str(fare) + ", " + str(doc['yq']) + ", " + str(doc['yr']) + ", " + str(
@@ -1328,12 +1276,8 @@ def fare_brand_creation():
         else:
             for doc in res[each_fare]:
 
-                try:
-                    if doc['od_distance'] == 0:
-                        doc['od_distance'] = 1
-                except:
-                    if doc['odDistance'] == 0:
-                        doc['odDistance'] = 1
+                if doc['od_distance'] == 0:
+                    doc['od_distance'] = 1
                 delta_ = delta / EXCHANGE_RATE[doc["currency"]] * EXCHANGE_RATE[currency]
                 if "applied_fare_basis" in doc:
                     doc.update({"fbc__": doc['applied_fare_basis'].strip()})
@@ -1367,225 +1311,106 @@ def fare_brand_creation():
                             currency = doc["currency"]
                             delta_ = (delta / 100) * fare_amount
 
-                        try:
-                            if doc["owrt"] == "1":
-                                # if delta_type == "P":
-                                #     currency = doc["currency"]
-                                #     delta_ = (delta / 100) * doc["originalrecmndFare"]
-                                doc['rbd'] = doc['temprbd']
-                                add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
-                                                                      fare_amount + delta_, doc["currency"], FCR_currency, "ow",
-                                                                      compartment, EXCHANGE_RATE, fare_brand_currency)
-                                fare_brand_value = fare_brand_formula_sign(fare_brand_formula, add_on[doc['temprbd']]['ow'],
-                                                                           fare_amount + delta_, channel, fare_brand,
-                                                                           doc["currency"], flag, channel_fb)
-                                print fare_brand_value
-                                country = fbc[-3:-1]
-                                fee_detail = add_on[doc['rbd']]['ow']
-                                for key, value in fare_brand_value.items():
-                                    docs = deepcopy(doc)
-                                    fare = value
-                                    docs.update({'channel': key.split(" ", 2)[0]})
-                                    if key.split(" ", 2)[0] == "Web":
-                                        docs.update({'ruleId': "62" + country})
-                                        docs.update({'currentYR': 0})
-                                    elif key.split(" ", 2)[0] == "GDS":
-                                        docs.update({'ruleId': "01" + country})
-                                    else:
-                                        docs.update({'ruleId': "VA" + country})
+                        if doc["owrt"] == "1":
+                            # if delta_type == "P":
+                            #     currency = doc["currency"]
+                            #     delta_ = (delta / 100) * doc["originalrecmndFare"]
+                            doc['rbd'] = doc['temprbd']
+                            add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
+                                                                  fare_amount + delta_, doc["currency"], FCR_currency, "ow",
+                                                                  compartment, EXCHANGE_RATE, fare_brand_currency)
+                            fare_brand_value = fare_brand_formula_sign(fare_brand_formula, add_on[doc['temprbd']]['ow'],
+                                                                       fare_amount + delta_, channel, fare_brand,
+                                                                       doc["currency"], flag, channel_fb)
+                            print fare_brand_value
+                            country = fbc[-3:-1]
+                            fee_detail = add_on[doc['rbd']]['ow']
+                            for key, value in fare_brand_value.items():
+                                docs = deepcopy(doc)
+                                fare = value
+                                docs.update({'channel': key.split(" ", 2)[0]})
+                                if key.split(" ", 2)[0] == "Web":
+                                    docs.update({'ruleId': "62" + country})
+                                    docs.update({'currentYR': 0})
+                                elif key.split(" ", 2)[0] == "GDS":
+                                    docs.update({'ruleId': "01" + country})
+                                else:
+                                    docs.update({'ruleId': "VA" + country})
 
-                                    docs.update({'fare_brand': key.split(" ", 1)[1]})
-                                    fare_brand = key.split(" ", 1)[1]
-                                    channel = key.split(" ", 2)[0]
+                                docs.update({'fare_brand': key.split(" ", 1)[1]})
+                                fare_brand = key.split(" ", 1)[1]
+                                channel = key.split(" ", 2)[0]
 
-                                    if key.split(" ", 2)[0] == "GDS":
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['gds']})
-                                        # doc.update({'currentYQ': doc['currentYQ'] / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentYR': doc['currentYR'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentSurcharges': doc['currentSurcharges'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentTax': doc['currentTax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                if key.split(" ", 2)[0] == "GDS":
+                                    fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]])
+                                    docs.update({'currency': pos_curr[doc['pos']]['gds']})
+                                    # doc.update({'currentYQ': doc['currentYQ'] / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'currentYR': doc['currentYR'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'currentSurcharges': doc['currentSurcharges'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'currentTax': doc['currentTax'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
 
-                                        docs.update({'currentYQ': docs['currentYQ'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentYR': docs['currentYR'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentSurcharges': docs['currentSurcharges'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentTax': docs['currentTax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc["currency"] currentTax currentSurcharges
-                                        # doc["currentYQ"]
-                                    else:
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['web']})
-                                        # doc.update({'currentYQ': doc['currentYQ'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentYR': doc['currentYR'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentSurcharges': doc['currentSurcharges'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentTax': doc['currentTax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentYQ': docs['currentYQ'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentYR': docs['currentYR'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentSurcharges': docs['currentSurcharges'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentTax': docs['currentTax'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc["currency"] currentTax currentSurcharges
+                                    # doc["currentYQ"]
+                                else:
+                                    fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[
+                                        doc["currency"]])
+                                    docs.update({'currency': pos_curr[doc['pos']]['web']})
+                                    # doc.update({'currentYQ': doc['currentYQ'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'currentYR': doc['currentYR'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'currentSurcharges': doc['currentSurcharges'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'currentTax': doc['currentTax'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
 
-                                        docs.update({'currentYQ': docs['currentYQ'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentYR': docs['currentYR'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentSurcharges': docs['currentSurcharges'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentTax': docs['currentTax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentYQ': docs['currentYQ'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentYR': docs['currentYR'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentSurcharges': docs['currentSurcharges'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'currentTax': docs['currentTax'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
 
 
-                                    if "Base Fare" in farebrand_value_calc and "YQ" in farebrand_value_calc and "YR" in farebrand_value_calc:
-                                        base_fare = fare - docs["currentYQ"] - docs["currentYR"]
-                                        # fare
-                                    elif "Base Fare" in farebrand_value_calc and "YQ" in farebrand_value_calc:
-                                        base_fare = fare - docs["currentYQ"]
-                                    elif "Base Fare" in farebrand_value_calc:
-                                        base_fare = fare
-                                    else:
-                                        base_fare = 0
+                                if "Base Fare" in farebrand_value_calc and "YQ" in farebrand_value_calc and "YR" in farebrand_value_calc:
+                                    base_fare = fare - docs["currentYQ"] - docs["currentYR"]
+                                    # fare
+                                elif "Base Fare" in farebrand_value_calc and "YQ" in farebrand_value_calc:
+                                    base_fare = fare - docs["currentYQ"]
+                                elif "Base Fare" in farebrand_value_calc:
+                                    base_fare = fare
+                                else:
+                                    base_fare = 0
 
-                                    # fare - doc['currentYR'] - doc['currentYQ'] - doc['currentSurcharges']
-                                    docs.update({'editbasefare': round(base_fare, 0) })
-                                    docs.update({'currentBaseFare': round(base_fare, 0) })
-                                    docs.update(
-                                        {'recoTotalFare': round(base_fare + docs["currentYR"] + docs['currentYQ'] + docs['currentSurcharges'] + docs['currentTax'] ,0)})
-                                    docs.update(
-                                        {'currentTotalFare': round(base_fare + docs["currentYR"] + docs['currentYQ'] + docs['currentSurcharges'] + docs['currentTax'] ,0)})
+                                # fare - doc['currentYR'] - doc['currentYQ'] - doc['currentSurcharges']
+                                docs.update({'editbasefare': round(base_fare, 0) })
+                                docs.update({'currentBaseFare': round(base_fare, 0) })
+                                docs.update(
+                                    {'recoTotalFare': round(base_fare + docs["currentYR"] + docs['currentYQ'] + docs['currentSurcharges'] + docs['currentTax'] ,0)})
+                                docs.update(
+                                    {'currentTotalFare': round(base_fare + docs["currentYR"] + docs['currentYQ'] + docs['currentSurcharges'] + docs['currentTax'] ,0)})
 
-                                    docs.update({'recmndFare': round(base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'], 2) })
-                                    docs.update({'currentFare': round(base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'], 0)})
-                                    docs.update({'originalrecmndFare': round(base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'], 0)})
-                                    docs.update({'recmndYield': round(((((base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'])/ EXCHANGE_RATE["AED"] * EXCHANGE_RATE[docs["currency"]]) / docs['od_distance']) * 100), 0)})
-                                    docs.update({'fee_detail': fee_detail})
-                                    docs.update({'farebasis': depth_fb(docs, fbc_standardation[0], country, add_on, channel,
-                                                                       fare_brand, compartment)})
-                                    fare_doc.append(docs)
-                        except:
-                            if doc["owRt"] == "1":
-                                # if delta_type == "P":
-                                #     currency = doc["currency"]
-                                #     delta_ = (delta / 100) * doc["originalrecmndFare"]
-                                doc['rbd'] = doc['temprbd']
-                                add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
-                                                                      fare_amount + delta_, doc["currency"],
-                                                                      FCR_currency, "ow",
-                                                                      compartment, EXCHANGE_RATE, fare_brand_currency)
-                                fare_brand_value = fare_brand_formula_sign(fare_brand_formula,
-                                                                           add_on[doc['temprbd']]['ow'],
-                                                                           fare_amount + delta_, channel, fare_brand,
-                                                                           doc["currency"], flag, channel_fb)
-                                print
-                                fare_brand_value
-                                country = fbc[-3:-1]
-                                fee_detail = add_on[doc['rbd']]['ow']
-                                for key, value in fare_brand_value.items():
-                                    docs = deepcopy(doc)
-                                    fare = value
-                                    docs.update({'channel': key.split(" ", 2)[0]})
-                                    if key.split(" ", 2)[0] == "Web":
-                                        docs.update({'ruleId': "62" + country})
-                                        docs.update({'currentYR': 0})
-                                    elif key.split(" ", 2)[0] == "GDS":
-                                        docs.update({'ruleId': "01" + country})
-                                    else:
-                                        docs.update({'ruleId': "VA" + country})
-
-                                    docs.update({'fare_brand': key.split(" ", 1)[1]})
-                                    fare_brand = key.split(" ", 1)[1]
-                                    channel = key.split(" ", 2)[0]
-
-                                    if key.split(" ", 2)[0] == "GDS":
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['gds']})
-                                        # doc.update({'currentYQ': doc['currentYQ'] / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentYR': doc['currentYR'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentSurcharges': doc['currentSurcharges'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentTax': doc['currentTax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-
-                                        docs.update({'currentYQ': docs['currentYQ'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentYR': docs['currentYR'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentSurcharges': docs['currentSurcharges'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentTax': docs['currentTax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc["currency"] currentTax currentSurcharges
-                                        # doc["currentYQ"]
-                                    else:
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['web']})
-                                        # doc.update({'currentYQ': doc['currentYQ'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentYR': doc['currentYR'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentSurcharges': doc['currentSurcharges'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'currentTax': doc['currentTax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-
-                                        docs.update({'currentYQ': docs['currentYQ'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentYR': docs['currentYR'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentSurcharges': docs['currentSurcharges'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'currentTax': docs['currentTax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-
-                                    if "Base Fare" in farebrand_value_calc and "YQ" in farebrand_value_calc and "YR" in farebrand_value_calc:
-                                        base_fare = fare - docs["currentYQ"] - docs["currentYR"]
-                                        # fare
-                                    elif "Base Fare" in farebrand_value_calc and "YQ" in farebrand_value_calc:
-                                        base_fare = fare - docs["currentYQ"]
-                                    elif "Base Fare" in farebrand_value_calc:
-                                        base_fare = fare
-                                    else:
-                                        base_fare = 0
-
-                                    # fare - doc['currentYR'] - doc['currentYQ'] - doc['currentSurcharges']
-                                    docs.update({'editbasefare': round(base_fare, 0)})
-                                    docs.update({'currentBaseFare': round(base_fare, 0)})
-                                    docs.update(
-                                        {'recoTotalFare': round(
-                                            base_fare + docs["currentYR"] + docs['currentYQ'] + docs[
-                                                'currentSurcharges'] + docs['currentTax'], 0)})
-                                    docs.update(
-                                        {'currentTotalFare': round(
-                                            base_fare + docs["currentYR"] + docs['currentYQ'] + docs[
-                                                'currentSurcharges'] + docs['currentTax'], 0)})
-
-                                    docs.update({'recmndFare': round(
-                                        base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'],
-                                        2)})
-                                    docs.update({'currentFare': round(
-                                        base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'],
-                                        0)})
-                                    docs.update({'originalrecmndFare': round(
-                                        base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'],
-                                        0)})
-                                    docs.update({'recmndYield': round(((((base_fare + docs['currentYQ'] + docs[
-                                        'currentYR'] + docs['currentSurcharges']) / EXCHANGE_RATE["AED"] *
-                                                                         EXCHANGE_RATE[docs["currency"]]) / docs[
-                                                                            'od_distance']) * 100), 0)})
-                                    docs.update({'fee_detail': fee_detail})
-                                    docs.update(
-                                        {'farebasis': depth_fb(docs, fbc_standardation[0], country, add_on, channel,
-                                                               fare_brand, compartment)})
-                                    fare_doc.append(docs)
+                                docs.update({'recmndFare': round(base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'], 2) })
+                                docs.update({'currentFare': round(base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'], 0)})
+                                docs.update({'originalrecmndFare': round(base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'], 0)})
+                                docs.update({'recmndYield': round(((((base_fare + docs['currentYQ'] + docs['currentYR'] + docs['currentSurcharges'])/ EXCHANGE_RATE["AED"] * EXCHANGE_RATE[docs["currency"]]) / docs['od_distance']) * 100), 0)})
+                                docs.update({'fee_detail': fee_detail})
+                                docs.update({'farebasis': depth_fb(docs, fbc_standardation[0], country, add_on, channel,
+                                                                   fare_brand, compartment)})
+                                fare_doc.append(docs)
 
                         else:
                             # if "fare_brand" in markets:
@@ -1706,308 +1531,150 @@ def fare_brand_creation():
                         print (doc['fare'] + delta)
                         # print doc['rbd']
                         # temp_dummy_rbd_for_screen = doc['applied_fare_basis'].strip()
-                        try:
-                            if doc["ow_rt"] == "1":
-                                if delta_type == "P":
-                                    currency = doc["currency"]
-                                    delta_ = (delta / 100) * doc["fare"]
-                                doc["owrt"] = "1"
-                                add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
-                                                                      doc['fare'] + delta_, doc["currency"], FCR_currency, "ow",
-                                                                      compartment, EXCHANGE_RATE, fare_brand_currency)
-                                fee_detail = add_on[doc['rbd']]['ow']
-                                fare_brand_value = fare_brand_formula_sign(fare_brand_formula, add_on[doc['rbd']]['ow'],
-                                                                           doc['fare'] + delta_, channel,
-                                                                           fare_brand,
-                                                                           doc["currency"], flag, channel_fb)
-                                # print fare_brand_value
-                                fbc = deepcopy(doc['applied_fare_basis'])
-                                check_special_fare = fbc[2]
-                                try:
-                                    fare_letter = int(check_special_fare)
-                                    check_special_fare = ""
-                                except ValueError as error:
-                                    print error
-                                    # check_special_fare
+                        if doc["ow_rt"] == "1":
+                            if delta_type == "P":
+                                currency = doc["currency"]
+                                delta_ = (delta / 100) * doc["fare"]
+                            doc["owrt"] = "1"
+                            add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
+                                                                  doc['fare'] + delta_, doc["currency"], FCR_currency, "ow",
+                                                                  compartment, EXCHANGE_RATE, fare_brand_currency)
+                            fee_detail = add_on[doc['rbd']]['ow']
+                            fare_brand_value = fare_brand_formula_sign(fare_brand_formula, add_on[doc['rbd']]['ow'],
+                                                                       doc['fare'] + delta_, channel,
+                                                                       fare_brand,
+                                                                       doc["currency"], flag, channel_fb)
+                            # print fare_brand_value
+                            fbc = deepcopy(doc['applied_fare_basis'])
+                            check_special_fare = fbc[2]
+                            try:
+                                fare_letter = int(check_special_fare)
+                                check_special_fare = ""
+                            except ValueError as error:
+                                print error
+                                # check_special_fare
 
-                                print "check_special_fare"
-                                print check_special_fare
-                                country = doc['fbc'][-3:-1]
-                                base_fare = doc['fare']
-                                # print fare_brand_value
-                                if compartment == "Y":
-                                    del fare_brand_value['TA FLY+Visa']
-                                    del fare_brand_value['TA Lite']
-                                    del fare_brand_value['TA Flex']
-                                    del fare_brand_value['TA Value']
-                                for key, value in fare_brand_value.items():
-                                    docs = deepcopy(doc)
-                                    fare = value
-                                    if key.split(" ", 2)[0] == "Web":
-                                        docs.update({'ruleid': "62" + country})
-                                        docs.update({'yr': 0})
-                                    elif key.split(" ", 2)[0] == "GDS":
-                                        docs.update({'ruleid': "01" + country})
-                                    else:
-                                        docs.update({'ruleid': "VA" + country})
+                            print "check_special_fare"
+                            print check_special_fare
+                            country = doc['fbc'][-3:-1]
+                            base_fare = doc['fare']
+                            # print fare_brand_value
+                            if compartment == "Y":
+                                del fare_brand_value['TA FLY+Visa']
+                                del fare_brand_value['TA Lite']
+                                del fare_brand_value['TA Flex']
+                                del fare_brand_value['TA Value']
+                            for key, value in fare_brand_value.items():
+                                docs = deepcopy(doc)
+                                fare = value
+                                if key.split(" ", 2)[0] == "Web":
+                                    docs.update({'ruleid': "62" + country})
+                                    docs.update({'yr': 0})
+                                elif key.split(" ", 2)[0] == "GDS":
+                                    docs.update({'ruleid': "01" + country})
+                                else:
+                                    docs.update({'ruleid': "VA" + country})
 
-                                    channel = key.split(" ", 2)[0]
-                                    channel_ = channel.replace("Web", "Web Promo").replace("TA", "TA Promo")
-                                    docs.update({'channel': channel_})
-                                    docs.update({'fare_brand': key.split(" ", 1)[1]})
-                                    fare_brand = key.split(" ", 1)[1]
-                                    if key.split(" ", 2)[0] == "GDS":
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['gds']})
-                                        # doc.update({'yq': doc['yq'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'yr': doc['yr'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'surcharge': doc['surcharge'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'tax': doc['tax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                channel = key.split(" ", 2)[0]
+                                channel_ = channel.replace("Web", "Web Promo").replace("TA", "TA Promo")
+                                docs.update({'channel': channel_})
+                                docs.update({'fare_brand': key.split(" ", 1)[1]})
+                                fare_brand = key.split(" ", 1)[1]
+                                if key.split(" ", 2)[0] == "GDS":
+                                    fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[
+                                        doc["currency"]])
+                                    docs.update({'currency': pos_curr[doc['pos']]['gds']})
+                                    # doc.update({'yq': doc['yq'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'yr': doc['yr'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'surcharge': doc['surcharge'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'tax': doc['tax'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
 
-                                        docs.update({'yq': docs['yq'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'yr': docs['yr'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'surcharge': docs['surcharge'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'tax': docs['tax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc["currency"] currentTax currentSurcharges
-                                        # doc["currentYQ"]
-                                    else:
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['web']})
-                                        # doc.update({'yq': doc['yq'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'yr': doc['yr'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'surcharge': doc['surcharge'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'tax': doc['tax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'yq': docs['yq'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'yr': docs['yr'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'surcharge': docs['surcharge'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'tax': docs['tax'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc["currency"] currentTax currentSurcharges
+                                    # doc["currentYQ"]
+                                else:
+                                    fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[
+                                        doc["currency"]])
+                                    docs.update({'currency': pos_curr[doc['pos']]['web']})
+                                    # doc.update({'yq': doc['yq'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'yr': doc['yr'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'surcharge': doc['surcharge'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    # doc.update({'tax': doc['tax'] / EXCHANGE_RATE[
+                                    #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
 
-                                        docs.update({'yq': docs['yq'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'yr': docs['yr'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'surcharge': docs['surcharge'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'tax': docs['tax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'yq': docs['yq'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'yr': docs['yr'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'surcharge': docs['surcharge'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
+                                    docs.update({'tax': docs['tax'] / EXCHANGE_RATE[
+                                        pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
 
-                                    docs.update({'editbasefare': round(fare, 1)})
-                                    docs.update({"updateBaseFare": round((fare - docs['yr']), 1)})
-                                    docs.update(
-                                        {'updatedTotalFare': round(fare + docs['yr'] + docs['yq'] + docs['tax'] + docs[
-                                            'surcharge'], 1)})
-                                    docs.update(
-                                        {'recoTotalFare': round(fare + docs['yr'] + docs['yq'] + docs['tax'] + docs[
-                                            'surcharge'], 1)})
-                                    docs.update({'recmndFare': round(fare + docs['yr'] + docs['yq'], 1)})
-                                    docs.update({'recmndYield': round(((((fare + docs['yr'] + docs['yq'])/ EXCHANGE_RATE["AED"] * EXCHANGE_RATE[docs["currency"]]) / docs['od_distance']) * 100), 1)})
-                                    docs.update({'fee_detail': fee_detail})
+                                docs.update({'editbasefare': round(fare, 1)})
+                                docs.update({"updateBaseFare": round((fare - docs['yr']), 1)})
+                                docs.update(
+                                    {'updatedTotalFare': round(fare + docs['yr'] + docs['yq'] + docs['tax'] + docs[
+                                        'surcharge'], 1)})
+                                docs.update(
+                                    {'recoTotalFare': round(fare + docs['yr'] + docs['yq'] + docs['tax'] + docs[
+                                        'surcharge'], 1)})
+                                docs.update({'recmndFare': round(fare + docs['yr'] + docs['yq'], 1)})
+                                docs.update({'recmndYield': round(((((fare + docs['yr'] + docs['yq'])/ EXCHANGE_RATE["AED"] * EXCHANGE_RATE[docs["currency"]]) / docs['od_distance']) * 100), 1)})
+                                docs.update({'fee_detail': fee_detail})
 
-                                    fbc_new = depth_fb(docs, fbc_standardation[0], country, add_on, channel_,
-                                                       fare_brand, compartment)
-                                    # fbc_new = doc['applied_fare_basis']
-                                    # print fbc_new
-                                    fare_brand_array = [x for x in list(fbc_standardation[0]['position_array'][6]['value_array']) if
-                                                  x['value'] == fare_brand.upper()]
+                                fbc_new = depth_fb(docs, fbc_standardation[0], country, add_on, channel_,
+                                                   fare_brand, compartment)
+                                # fbc_new = doc['applied_fare_basis']
+                                # print fbc_new
+                                fare_brand_array = [x for x in list(fbc_standardation[0]['position_array'][6]['value_array']) if
+                                              x['value'] == fare_brand.upper()]
 
-                                    channel_array = [x for x in list(fbc_standardation[0]['position_array'][8]['value_array']) if
-                                                 channel_.lower() in x['value'].lower()]
+                                channel_array = [x for x in list(fbc_standardation[0]['position_array'][8]['value_array']) if
+                                             channel_.lower() in x['value'].lower()]
 
-                                    if channel_.lower() == "gds" and fare_brand.lower() == "value" or channel_.lower() == "gds" and fare_brand.lower() == "business":
-                                        docs.update({'applied_fare_basis': fbc_new.replace('OW1', "OWPR").replace('OW2', "OWPR")})
-                                    else:
-                                        list_of_nums = map(int, re.findall('\d+', docs['applied_fare_basis']))
-                                        print docs['applied_fare_basis'], list_of_nums, channel_, fare_brand, str(
-                                            channel_array[0]['key']), str(fare_brand_array[0]['key'])
-                                        docs.update({'applied_fare_basis': docs['applied_fare_basis'].replace(
-                                            str(list_of_nums[0]), str(fare_brand_array[0]['key']))
-                                                    .replace(str(list_of_nums[1]), str(channel_array[0]['key']))
-                                                     })
-                                        print docs['applied_fare_basis']
+                                if channel_.lower() == "gds" and fare_brand.lower() == "value" or channel_.lower() == "gds" and fare_brand.lower() == "business":
+                                    docs.update({'applied_fare_basis': fbc_new.replace('OW1', "OWPR").replace('OW2', "OWPR")})
+                                else:
+                                    list_of_nums = map(int, re.findall('\d+', docs['applied_fare_basis']))
+                                    print docs['applied_fare_basis'], list_of_nums, channel_, fare_brand, str(
+                                        channel_array[0]['key']), str(fare_brand_array[0]['key'])
+                                    docs.update({'applied_fare_basis': docs['applied_fare_basis'].replace(
+                                        str(list_of_nums[0]), str(fare_brand_array[0]['key']))
+                                                .replace(str(list_of_nums[1]), str(channel_array[0]['key']))
+                                                 })
+                                    print docs['applied_fare_basis']
 
-                                    if docs['applied_fare_basis'] == fbc:
-                                        docs.update({'fare': base_fare})
-                                    else:
-                                        docs.update({'fare': 0})
-                                        docs.update({'fbc': ""})
-                                        docs.update({'totalFare': round(docs['yr'] + docs['yq'] + docs['tax'] + docs[
-                                            'surcharge'])})
+                                if docs['applied_fare_basis'] == fbc:
+                                    docs.update({'fare': base_fare})
+                                else:
+                                    docs.update({'fare': 0})
+                                    docs.update({'fbc': ""})
+                                    docs.update({'totalFare': round(docs['yr'] + docs['yq'] + docs['tax'] + docs[
+                                        'surcharge'])})
 
-                                    docs.update({'rbd': temp_dummy_rbd_for_screen})
+                                docs.update({'rbd': temp_dummy_rbd_for_screen})
 
-                                    fare_doc.append(docs)
-                        except:
-                            if doc["ow_rt"] == "1":
-                                if delta_type == "P":
-                                    currency = doc["currency"]
-                                    delta_ = (delta / 100) * doc["fare"]
-                                doc["owrt"] = "1"
-                                add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
-                                                                      doc['fare'] + delta_, doc["currency"],
-                                                                      FCR_currency, "ow",
-                                                                      compartment, EXCHANGE_RATE, fare_brand_currency)
-                                fee_detail = add_on[doc['rbd']]['ow']
-                                fare_brand_value = fare_brand_formula_sign(fare_brand_formula, add_on[doc['rbd']]['ow'],
-                                                                           doc['fare'] + delta_, channel,
-                                                                           fare_brand,
-                                                                           doc["currency"], flag, channel_fb)
-                                # print fare_brand_value
-                                fbc = deepcopy(doc['applied_fare_basis'])
-                                check_special_fare = fbc[2]
-                                try:
-                                    fare_letter = int(check_special_fare)
-                                    check_special_fare = ""
-                                except ValueError as error:
-                                    print
-                                    error
-                                    # check_special_fare
-
-                                print
-                                "check_special_fare"
-                                print
-                                check_special_fare
-                                country = doc['fbc'][-3:-1]
-                                base_fare = doc['fare']
-                                # print fare_brand_value
-                                if compartment == "Y":
-                                    del fare_brand_value['TA FLY+Visa']
-                                    del fare_brand_value['TA Lite']
-                                    del fare_brand_value['TA Flex']
-                                    del fare_brand_value['TA Value']
-                                for key, value in fare_brand_value.items():
-                                    docs = deepcopy(doc)
-                                    fare = value
-                                    if key.split(" ", 2)[0] == "Web":
-                                        docs.update({'ruleid': "62" + country})
-                                        docs.update({'yr': 0})
-                                    elif key.split(" ", 2)[0] == "GDS":
-                                        docs.update({'ruleid': "01" + country})
-                                    else:
-                                        docs.update({'ruleid': "VA" + country})
-
-                                    channel = key.split(" ", 2)[0]
-                                    channel_ = channel.replace("Web", "Web Promo").replace("TA", "TA Promo")
-                                    docs.update({'channel': channel_})
-                                    docs.update({'fare_brand': key.split(" ", 1)[1]})
-                                    fare_brand = key.split(" ", 1)[1]
-                                    if key.split(" ", 2)[0] == "GDS":
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['gds']})
-                                        # doc.update({'yq': doc['yq'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'yr': doc['yr'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'surcharge': doc['surcharge'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'tax': doc['tax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-
-                                        docs.update({'yq': docs['yq'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'yr': docs['yr'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'surcharge': docs['surcharge'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'tax': docs['tax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['gds']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc["currency"] currentTax currentSurcharges
-                                        # doc["currentYQ"]
-                                    else:
-                                        fare = (fare / EXCHANGE_RATE[pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[
-                                            doc["currency"]])
-                                        docs.update({'currency': pos_curr[doc['pos']]['web']})
-                                        # doc.update({'yq': doc['yq'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'yr': doc['yr'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'surcharge': doc['surcharge'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        # doc.update({'tax': doc['tax'] / EXCHANGE_RATE[
-                                        #     pos_curr[doc['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-
-                                        docs.update({'yq': docs['yq'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'yr': docs['yr'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'surcharge': docs['surcharge'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-                                        docs.update({'tax': docs['tax'] / EXCHANGE_RATE[
-                                            pos_curr[docs['pos']]['web']] * EXCHANGE_RATE[doc["currency"]]})
-
-                                    docs.update({'editbasefare': round(fare, 1)})
-                                    docs.update({"updateBaseFare": round((fare - docs['yr']), 1)})
-                                    docs.update(
-                                        {'updatedTotalFare': round(fare + docs['yr'] + docs['yq'] + docs['tax'] + docs[
-                                            'surcharge'], 1)})
-                                    docs.update(
-                                        {'recoTotalFare': round(fare + docs['yr'] + docs['yq'] + docs['tax'] + docs[
-                                            'surcharge'], 1)})
-                                    docs.update({'recmndFare': round(fare + docs['yr'] + docs['yq'], 1)})
-                                    docs.update({'recmndYield': round(((((fare + docs['yr'] + docs['yq']) /
-                                                                         EXCHANGE_RATE["AED"] * EXCHANGE_RATE[
-                                                                             docs["currency"]]) / docs[
-                                                                            'od_distance']) * 100), 1)})
-                                    docs.update({'fee_detail': fee_detail})
-
-                                    fbc_new = depth_fb(docs, fbc_standardation[0], country, add_on, channel_,
-                                                       fare_brand, compartment)
-                                    # fbc_new = doc['applied_fare_basis']
-                                    # print fbc_new
-                                    fare_brand_array = [x for x in
-                                                        list(fbc_standardation[0]['position_array'][6]['value_array'])
-                                                        if
-                                                        x['value'] == fare_brand.upper()]
-
-                                    channel_array = [x for x in
-                                                     list(fbc_standardation[0]['position_array'][8]['value_array']) if
-                                                     channel_.lower() in x['value'].lower()]
-
-                                    if channel_.lower() == "gds" and fare_brand.lower() == "value" or channel_.lower() == "gds" and fare_brand.lower() == "business":
-                                        docs.update({'applied_fare_basis': fbc_new.replace('OW1', "OWPR").replace('OW2',
-                                                                                                                  "OWPR")})
-                                    else:
-                                        list_of_nums = map(int, re.findall('\d+', docs['applied_fare_basis']))
-                                        print
-                                        docs['applied_fare_basis'], list_of_nums, channel_, fare_brand, str(
-                                            channel_array[0]['key']), str(fare_brand_array[0]['key'])
-                                        docs.update({'applied_fare_basis': docs['applied_fare_basis'].replace(
-                                            str(list_of_nums[0]), str(fare_brand_array[0]['key']))
-                                                    .replace(str(list_of_nums[1]), str(channel_array[0]['key']))
-                                                     })
-                                        print
-                                        docs['applied_fare_basis']
-
-                                    if docs['applied_fare_basis'] == fbc:
-                                        docs.update({'fare': base_fare})
-                                    else:
-                                        docs.update({'fare': 0})
-                                        docs.update({'fbc': ""})
-                                        docs.update({'totalFare': round(docs['yr'] + docs['yq'] + docs['tax'] + docs[
-                                            'surcharge'])})
-
-                                    docs.update({'rbd': temp_dummy_rbd_for_screen})
-
-                                    fare_doc.append(docs)
-
+                                fare_doc.append(docs)
                         else:
                             if delta_type == "P":
                                 currency = doc["currency"]
                                 delta_ = (delta / 100) * doc["fare"]
-                            try:
-                                doc["owrt"] = "2"
-                            except:
-                                doc["owRt"] = "2"
+                            doc["owrt"] = "2"
                             add_on, RBD_min_fare = get_add_on_doc(base_baggage, add_od_doc, RBD_sellup,
                                                                   doc['fare'] + delta_, doc["currency"], FCR_currency, "rt",
                                                                   compartment, EXCHANGE_RATE,fare_brand_currency )
@@ -2696,5 +2363,3 @@ if __name__ == '__main__':
     # fare_brand_creation()
     http_server = WSGIServer(('', 5000), app)
     http_server.serve_forever()
-    #context = ('226c82ec96d727ae.crt', 'kalai.key')
-    app.run(host="0.0.0.0", port=5000, ssl_context=context)

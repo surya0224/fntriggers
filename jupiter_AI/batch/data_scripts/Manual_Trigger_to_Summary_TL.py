@@ -300,8 +300,8 @@ if __name__ == '__main__':
     # for pos in pos_list:
     #     main(pos,od)
     db = client[JUPITER_DB]
-    market_list = db.JUP_DB_Manual_Triggers_Module.distinct('pos.City')
-    # market_list = ["RUH"]
+    #market_list = db.JUP_DB_Manual_Triggers_Module.distinct('pos.City')
+    market_list = ["RUH"]
     for each_market in market_list:
         main(each_market,client)
         # pass

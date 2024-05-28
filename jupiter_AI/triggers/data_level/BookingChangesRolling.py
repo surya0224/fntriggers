@@ -36,7 +36,7 @@ from jupiter_AI.triggers.data_level.MainClass import DataLevel
 from jupiter_AI import mongo_client, JUPITER_DB, Host_Airline_Code, Host_Airline_Hub
 from jupiter_AI.logutils import measure
 
-# db = client[JUPITER_DB]
+#db = client[JUPITER_DB]
 BKRL_TRIGGERS = []
 
 
@@ -457,7 +457,7 @@ def main_helper(db):
                             list(sub_sig_markets_df['market'].values)))
     markets = []
     counter = 0
-    for mrkt in ['AMMAMMDXBY']:
+    for mrkt in ['UAETBSDXBY']:
         if counter == 2000:
             id_list = generate_booking_changes_rolling_triggers(data_list=markets,
                                                                 pos=data['pos'],

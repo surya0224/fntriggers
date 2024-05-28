@@ -1651,7 +1651,7 @@ def main_func(
             #                            dep_date_start=dep_date_start,
             #                            dep_date_end=dep_date_end,
             #                            )
-            print "time taken to get mrkt_data for host and competitors = ",response['mrkt_data'], time.time() - st
+            print "time taken to get mrkt_data for host and competitors = ", time.time() - st
             st = time.time()
             fares_data = get_fares_data(pos=pos,
                                         origin=origin,

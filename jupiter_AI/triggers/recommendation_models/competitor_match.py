@@ -2273,40 +2273,40 @@ def comp_match(pos, origin, destination, compartment,dep_date_start, dep_date_en
                     try:
                         fare_brand_formula["TA Lite"] = [ele for ele in fare_brand_formulas['TA Lite'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["TA Lite"] = fare_brand_formulas.get('TA Lite','')
+                        fare_brand_formula["TA Lite"] = fare_brand_formulas['TA Lite']
                     try:
                         fare_brand_formula["Web Value"] = [ele for ele in fare_brand_formulas['Web Value'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["Web Value"] = fare_brand_formulas.get('Web Value','')
+                        fare_brand_formula["Web Value"] = fare_brand_formulas['Web Value']
                     try:
                         fare_brand_formula["TA Value"] = [ele for ele in fare_brand_formulas['TA Value'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["TA Value"] = fare_brand_formulas.get('TA Value','')
+                        fare_brand_formula["TA Value"] = fare_brand_formulas['TA Value']
                     try:
                         fare_brand_formula["GDS Value"] = [ele for ele in fare_brand_formulas['GDS Value'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["GDS Value"] = fare_brand_formulas.get('GDS Value','')
+                        fare_brand_formula["GDS Value"] = fare_brand_formulas['GDS Value']
                     try:
                         fare_brand_formula["TA FLY+Visa"] = [ele for ele in fare_brand_formulas['TA FLY+Visa'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["TA FLY+Visa"] = fare_brand_formulas.get('TA FLY+Visa','')
+                        fare_brand_formula["TA FLY+Visa"] = fare_brand_formulas['TA FLY+Visa']
                     try:
                         fare_brand_formula["Web Flex"] = [ele for ele in fare_brand_formulas['Web Flex'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["Web Flex"] = fare_brand_formulas.get('Web Flex','')
+                        fare_brand_formula["Web Flex"] = fare_brand_formulas['Web Flex']
                     try:
                         fare_brand_formula["TA Flex"] = [ele for ele in fare_brand_formulas['TA Flex'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["TA Flex"] = fare_brand_formulas.get('TA Flex','')
+                        fare_brand_formula["TA Flex"] = fare_brand_formulas['TA Flex']
                     try:
                         fare_brand_formula["GDS GDS Flex"] = [ele for ele in fare_brand_formulas['GDS Flex'] if ele not in unwanted_num]
                     except Exception:
-                        fare_brand_formula["GDS GDS Flex"] = fare_brand_formulas.get('GDS Flex','')
+                        fare_brand_formula["GDS GDS Flex"] = fare_brand_formulas['GDS Flex']
                 else:
                     try:
                         fare_brand_formula["GDS Business"] = fare_brand_formulas['GDS Business'].remove("srt").remove("end")
                     except Exception:
-                        fare_brand_formula["GDS Business"] = fare_brand_formulas.get('GDS Business','')
+                        fare_brand_formula["GDS Business"] = fare_brand_formulas['GDS Business']
                 # print RBD_sellup
                 # '''
                 ## For competitor match model
@@ -3470,8 +3470,8 @@ if __name__ == "__main__":
     db = client[JUPITER_DB]
     market_array = [
         # "VKOVKODXBY",
-        "AMMAMMDXBY",
-        #     "UAEDXBSLLY",
+        # "AMMAMMDXBY",
+            "UAEDXBSLLY",
             # "ADDADDDXBY",
             # "ADDADDDXBJ",
             # "UAEDXBSLLY",

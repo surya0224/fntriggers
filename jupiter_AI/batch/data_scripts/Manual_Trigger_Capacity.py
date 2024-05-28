@@ -102,7 +102,7 @@ def main(od, client):
     db = client[JUPITER_DB]
     num = 1
     Bulk = db.JUP_DB_Manual_Triggers_Module.initialize_unordered_bulk_op()
-    cursor = db.JUP_DB_Host_OD_Capacity.find({'dep_date':{"$gte" : "2021-01-01","$lte" : "2023-12-31"}, 'od':{'$in' : od}}, no_cursor_timeout=True)
+    cursor = db.JUP_DB_Host_OD_Capacity.find({'dep_date':{"$gte" : dep_date_start,"$lte" : dep_date_end}, 'od':{'$in' : od}}, no_cursor_timeout=True)
     for x in cursor:
         try:
             # print(x)
@@ -147,7 +147,7 @@ def main(od, client):
                 'destination.City': x['destination'],
                 'compartment.compartment': compartment_J['compartment'],
                 "dep_date": dep_date,
-                # "dep_date_ISO": dep_date_ISO,
+                "dep_date_ISO": dep_date_ISO,
             }).update(
                 {
             "$set": {
@@ -156,7 +156,7 @@ def main(od, client):
                 #"destination": destination,
                 #"compartment": compartment_J,
                 "dep_date": dep_date,
-                # "dep_date_ISO": dep_date_ISO,
+                "dep_date_ISO": dep_date_ISO,
                 "dep_month": dep_month,
                 "dep_year": dep_year,
                 "inventory": inventory_J
@@ -187,7 +187,7 @@ def main(od, client):
                 'destination.City': x['destination'],
                 'compartment.compartment': compartment_Y['compartment'],
                 "dep_date": dep_date,
-                # "dep_date_ISO": dep_date_ISO,
+                "dep_date_ISO": dep_date_ISO,
             }).update(
                 {
                     "$set": {
@@ -196,7 +196,7 @@ def main(od, client):
                     #"destination": destination,
                     #"compartment": compartment_Y,
                     "dep_date": dep_date,
-                    # "dep_date_ISO": dep_date_ISO,
+                    "dep_date_ISO": dep_date_ISO,
                     "dep_month": dep_month,
                     "dep_year": dep_year,
                     "inventory": inventory_Y

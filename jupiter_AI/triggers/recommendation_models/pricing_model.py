@@ -30,8 +30,8 @@ import numpy as np
 import datetime
 import traceback
 
-db = client[JUPITER_DB]
-HOST_AIRLINE_CODE = Host_Airline_Code
+#db = client[JUPITER_DB]
+HOST_AIRLINE_CODE = HOST_AIRLINE_CODE
 EXCHANGE_RATE = {}
 currency_crsr = list(db.JUP_DB_Exchange_Rate.find({}))
 for curr in currency_crsr:

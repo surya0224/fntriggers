@@ -83,8 +83,6 @@ def generate_revenue_changes_rolling_triggers(pos,
 
         if sig_flag:
             dates_list = get_trigger_config_dates(db=db, sig_flag=sig_flag)
-            print "dates_list"
-            print dates_list
             if len(dates_list) > 0:
                 for date in dates_list:
                     trigger_obj = RevenueChangesRolling(data, SYSTEM_DATE)

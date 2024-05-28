@@ -13,7 +13,7 @@ from jupiter_AI import JUPITER_DB, mongo_client, SYSTEM_DATE, ATPCO_DB, Host_Air
 from jupiter_AI.logutils import measure
 
 
-#@measure(JUPITER_LOGGER)
+@measure(JUPITER_LOGGER)
 def get_used_footnotes(tariff, db):
     cur = db.JUP_DB_ATPCO_Fares_Rules.aggregate([
         {
@@ -74,7 +74,7 @@ def get_used_footnotes(tariff, db):
     return list(cur)
 
 
-#@measure(JUPITER_LOGGER)
+@measure(JUPITER_LOGGER)
 def insert_in_collection(tar, fn_list, system_date, client):
     db_ATPCO = client[ATPCO_DB]
     db = client[JUPITER_DB]
@@ -131,7 +131,7 @@ def insert_in_collection(tar, fn_list, system_date, client):
     db.JUP_DB_ATPCO_Footnotes.insert(final_insert)
 
 
-#@measure(JUPITER_LOGGER)
+@measure(JUPITER_LOGGER)
 def generate_footnotes_collection(client):
     db = client[JUPITER_DB]
     system_date = datetime.strptime(SYSTEM_DATE, '%Y-%m-%d')

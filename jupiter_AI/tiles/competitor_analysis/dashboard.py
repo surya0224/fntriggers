@@ -171,8 +171,8 @@ if __name__ == '__main__':
         'region': [],
         'country': [],
         'pos': [],
-        'origin': ['AGP'],
-        'destination': ['AUS'],
+        'origin': ['DXB'],
+        'destination': ['DOH'],
         'compartment': [],
         "toDate": "2017-02-28",
         "fromDate": "2017-02-14"

@@ -56,13 +56,13 @@ def main(od,client):
             Bulk.find({
                 'origin.City': x['origin'],
                 'destination.City': x['destination'],
-                # "dep_date_ISO" : {"$ne": None},
-                # "trx_date": str_date
+                "dep_date_ISO" : {"$ne": None},
+                "trx_date": str_date
             }).update(
             {
               "$set":{
                       "distance" : Distance,
-                      # "psuedo_od" : x["psuedo_od"]
+                      "psuedo_od" : x["psuedo_od"]
                     }
             })
             copyList.remove(x['od'])
@@ -80,11 +80,11 @@ def main(od,client):
     # break the remaining od and get from OD distance master sum the leg value and update to Manual triggers
     for each_od in copyList:
         distance = 0
-        if "DOH" in each_od:
+        if "DXB" in each_od:
             print "No data ",each_od
         else:
             try:
-                leg_1 = each_od[:3]+"KWI"
+                leg_1 = each_od[:3]+"DXB"
                 cursor_leg_1 = db.JUP_DB_OD_Distance_Master.find_one({'od': leg_1, 'distance': {'$ne': None}},no_cursor_timeout=True)
                 distance = cursor_leg_1["distance"]
                 # print "leg_1", leg_1, distance
@@ -100,8 +100,8 @@ def main(od,client):
             db.JUP_DB_Manual_Triggers_Module.update({
                 'origin.City': each_od[:3],
                 'destination.City': each_od[3:],
-                # "dep_date_ISO": {"$ne": None},
-                # "trx_date": str_date
+                "dep_date_ISO": {"$ne": None},
+                "trx_date": str_date
             },{
                 "$set": {
                     "distance": distance

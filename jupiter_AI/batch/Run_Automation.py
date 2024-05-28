@@ -48,7 +48,7 @@ from jupiter_AI.batch.atpco_automation.Automation_tasks import run_host_od_capac
     run_fareId, \
     run_market_segments, send_exec_stats_mail, run_lff, run_footnote_coll
 
-#from jupiter_AI.batch.atpco_automation.controlcheck import main
+from jupiter_AI.batch.atpco_automation.controlcheck import main
 
 from celery import group
 import pika

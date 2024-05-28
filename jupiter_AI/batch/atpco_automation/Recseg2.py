@@ -502,7 +502,7 @@ def recseg2(system_date,file_time, client):
                     i["GEO_LOC_GLOBAL_" + str(j + 1)] = i["SEGS_LOC"][((j * 7) + 2):((j * 7) + 4)]
 
             coll_Record_3_Cat_50.save(i)
-        counter += coll_Record_3_Cat_50
+        counter += 1
 
     # cr = db_fzDB.JUP_DB_ATPCO_Temp_Dates_DND.find({'file':'Recseg2.py'})
     # for i in cr:

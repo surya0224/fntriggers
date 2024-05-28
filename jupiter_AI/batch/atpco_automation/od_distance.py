@@ -66,4 +66,4 @@ def od_distance(client,system_date):
 
 if __name__ == '__main__':
     client = mongo_client()
-    od_distance(client,"2023-06-18")
+    od_distance("2018-04-02")

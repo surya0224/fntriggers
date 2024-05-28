@@ -1,10 +1,10 @@
 """
 Author: Anamika Jaiswal
 Date Created: 2018-05-15
-File Name: YQYR_complete.py
+File Name: YQYR_celery.py
 
 This code computes the YQYR values for the each fare record on Celery.
-
+No threading
 """
 
 import pymongo
@@ -17,13 +17,13 @@ import re
 import datetime
 import pandas as pd
 
-from jupiter_AI import client, JUPITER_DB, ATPCO_DB, JUPITER_LOGGER, mongo_client
+from jupiter_AI import client, JUPITER_DB, ATPCO_DB, JUPITER_LOGGER,mongo_client
 from jupiter_AI.logutils import measure
 
 # db_ATPCO = client[ATPCO_DB]
 # db_fzDB = client[JUPITER_DB]
 #
-# coll = db_fzDB.Temp_fzDB_tbl_006
+# coll = db_fzDB.JUP_DB_ATPCO_Fares_Rules
 # hubc = db_fzDB.JUP_DB_Carrier_hubs
 # yqyr = db_ATPCO.JUP_DB_ATPCO_YQYR_RecS1
 # exr = db_fzDB.JUP_DB_Exchange_Rate
@@ -508,8 +508,6 @@ def stage1_p2p(cxr, origin, origin_area, origin_zone, origin_country, destinatio
                destination_country, system_date, client):
     print "============P2P stage 1============="
     db_ATPCO = client[ATPCO_DB]
-    print (cxr, origin, origin_area, origin_zone, origin_country, destination, destination_area, destination_zone,
-               destination_country, system_date,)
     yqyr = db_ATPCO.JUP_DB_ATPCO_YQYR_RecS1
     cur2 = yqyr.find({"$and": [{"flag": 1}, {"CXR_CODE": cxr}, {"DISC_DATE": {"$gte": system_date}},
                                {"EFF_DATE": {"$lt": system_date}},
@@ -601,9 +599,9 @@ def stage1_p2p(cxr, origin, origin_area, origin_zone, origin_country, destinatio
                                                           {"JRNY_LOC_1_ZONE_TABLE_178.0.GEO_LOC_ZONE": {'$size': 0}},
                                                           {"JRNY_LOC_1_ZONE_TABLE_178.0.GEO_LOC_COUNTRY": {'$size': 0}}
 
-                                                      ]}
+                                                          ]}
 
-                                                  ]}]}]},
+                                                      ]}]}]},
                                {"$or": [{'JRNY_LOC_2_ZONE_TABLE_178': None},
                                         {'$and': [
                                             {"JRNY_LOC_2_ZONE_TABLE_178.1.GEO_LOC_AREA": {"$ne": destination_area}},
@@ -624,7 +622,7 @@ def stage1_p2p(cxr, origin, origin_area, origin_zone, origin_country, destinatio
                                                          {"JRNY_LOC_2_ZONE_TABLE_178.0.GEO_LOC_ZONE": {'$size': 0}},
                                                          {"JRNY_LOC_2_ZONE_TABLE_178.0.GEO_LOC_COUNTRY": {'$size': 0}}
 
-                                                     ]}
+                                                         ]}
 
                                                      ]}]}]},
 
@@ -703,13 +701,12 @@ def stage1_p2p(cxr, origin, origin_area, origin_zone, origin_country, destinatio
 
                                ]}, no_cursor_timeout=True).sort("SEQ_NO", pymongo.ASCENDING)
     # print cur2.count()
-    #for i in cur2:
-       # print (i("_id"))
+
 
     ######PUT EXCEPTION FOR EMPTY daTaFRaME
     df_stage1 = pd.DataFrame(list(cur2))
-    print ("start")
-    print list(df_stage1)
+
+    # print list(df_stage1)
     # print df_stage1[['RBD_1','RBD_2','RBD_3']]
     return df_stage1
 
@@ -719,7 +716,7 @@ def yqyr_hub(system_date, file_date, filedate, carrier_list, OD_list, hub, hub_a
              destination_zone, client):
     print "============HUB============="
     db_fzDB = client[JUPITER_DB]
-    coll = db_fzDB.Temp_fzDB_tbl_006
+    coll = db_fzDB.JUP_DB_ATPCO_Fares_Rules
 
     df_stage1_hub1 = stage1_hub1(carrier_list[0], origin, origin_area, origin_zone, origin_country, destination,
                                  destination_area, destination_zone, destination_country, system_date, hub, hub_area,
@@ -737,10 +734,9 @@ def yqyr_hub(system_date, file_date, filedate, carrier_list, OD_list, hub, hub_a
         {'carrier': {'$in': carrier_list}, 'OD': {'$in': OD_list},
          '$or': [{'effective_to': None}, {'effective_to': {'$gt': file_date}}]},
         no_cursor_timeout=True)
-    print ("lopp")
+    # print cur.count()
 
     for i in cur:
-
         sta = time.time()
 
         seqno = []
@@ -778,9 +774,9 @@ def yqyr_hub(system_date, file_date, filedate, carrier_list, OD_list, hub, hub_a
         currency = i['currency']
         compartment = i['compartment']
         try:
-
-            Reference_Rate = i['Reference_Rate']
-            if Reference_Rate == None:
+            
+            Reference_Rate=i['Reference_Rate']
+            if Reference_Rate==None:
                 continue
 
         except:
@@ -795,17 +791,15 @@ def yqyr_hub(system_date, file_date, filedate, carrier_list, OD_list, hub, hub_a
         df_stage2_hub1 = df_stage1_hub1.loc[(
 
             # (df_stage1_hub1.RBD_198.isna()| df_stage1_hub1.RBD_198 ==  rbd) &
-                (
-                        (df_stage1_hub1.RBD_1 == rbd) | (df_stage1_hub1.RBD_2 == rbd) | (
-                            df_stage1_hub1.RBD_3 == rbd) | (
-                                (df_stage1_hub1.RBD_1 == '') & (df_stage1_hub1.RBD_2 == '') & (
-                                    df_stage1_hub1.RBD_3 == ''))) &
-                (df_stage1_hub1.CABIN.isin([compartment, ''])) &
-                (df_stage1_hub1.RTN_TO_ORIG.isin([owrt, ''])))]
-        print  (df_stage2_hub1)
-
+            (
+                (df_stage1_hub1.RBD_1 == rbd) | (df_stage1_hub1.RBD_2 == rbd) | (df_stage1_hub1.RBD_3 == rbd) | (
+                    (df_stage1_hub1.RBD_1 == '') & (df_stage1_hub1.RBD_2 == '') & (df_stage1_hub1.RBD_3 == ''))) &
+            (df_stage1_hub1.CABIN.isin([compartment, ''])) &
+            (df_stage1_hub1.RTN_TO_ORIG.isin([owrt, ''])))]
 
         ###### create index on
+
+
 
         for index, j in df_stage2_hub1.iterrows():
 
@@ -883,15 +877,14 @@ def yqyr_hub(system_date, file_date, filedate, carrier_list, OD_list, hub, hub_a
         df_stage2_hub2 = df_stage1_hub2.loc[(
 
             # (df_stage1_hub2.RBD_198.isna()| df_stage1_hub2.RBD_198 ==  rbd) &
-                (
-                        (df_stage1_hub2.RBD_1 == rbd) | (df_stage1_hub2.RBD_2 == rbd) | (
-                            df_stage1_hub2.RBD_3 == rbd) | (
-                                (df_stage1_hub2.RBD_1 == '') & (df_stage1_hub2.RBD_2 == '') & (
-                                    df_stage1_hub2.RBD_3 == ''))) &
-                (df_stage1_hub2.CABIN.isin([compartment, ''])) &
-                (df_stage1_hub2.RTN_TO_ORIG.isin([owrt, ''])))]
+            (
+                (df_stage1_hub2.RBD_1 == rbd) | (df_stage1_hub2.RBD_2 == rbd) | (df_stage1_hub2.RBD_3 == rbd) | (
+                    (df_stage1_hub2.RBD_1 == '') & (df_stage1_hub2.RBD_2 == '') & (df_stage1_hub2.RBD_3 == ''))) &
+            (df_stage1_hub2.CABIN.isin([compartment, ''])) &
+            (df_stage1_hub2.RTN_TO_ORIG.isin([owrt, ''])))]
 
         ###### create index on df_stage2
+
 
         for index, j in df_stage2_hub2.iterrows():
             # print j['SEQ_NO']
@@ -974,18 +967,14 @@ def yqyr_hub(system_date, file_date, filedate, carrier_list, OD_list, hub, hub_a
         YR = YRi + YRf
         YQYR_SEQ_NO = [yqiseqno, yqfseqno, yriseqno, yrfseqno]
         YQ_flag = 9
-        YQF1=YQf
-        YQI1=YQi
-        YRI2=YRi
-        YRF2=YRf
         checklist = []
 
         # print YQ, YR
         print yqf1, yqf2, yqi1, yqi2, yrf1, yrf2, yri1, yri2
         print [YQ, YR, YQYR_SEQ_NO, YQ_flag]
-        # coll.update({"_id": i["_id"]}, {
-        #     '$set': {'YQ': YQ, 'YR': YR, 'YQI_seqno': YQYR_SEQ_NO[0], 'YQF_seqno': YQYR_SEQ_NO[1],"YQI":YQI1,"YQF":YQF1,"YRI":YRI2,"YRF":YRF2,
-        #              'YRI_seqno': YQYR_SEQ_NO[2], 'YRF_seqno': YQYR_SEQ_NO[3], 'YQ_flag': YQ_flag}})
+        coll.update({"_id": i["_id"]}, {
+            '$set': {'YQ': YQ, 'YR': YR, 'YQI_seqno': YQYR_SEQ_NO[0], 'YQF_seqno': YQYR_SEQ_NO[1],
+                     'YRI_seqno': YQYR_SEQ_NO[2], 'YRF_seqno': YQYR_SEQ_NO[3], 'YQ_flag': YQ_flag}})
 
         print ("hub-->", time.time() - sta)
 
@@ -997,8 +986,7 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
     db_ATPCO = client[ATPCO_DB]
     db_fzDB = client[JUPITER_DB]
 
-
-    coll = db_fzDB.Temp_fzDB_tbl_006
+    coll = db_fzDB.JUP_DB_ATPCO_Fares_Rules
 
     df_stage1 = stage1_p2p(carrier_list[0], origin, origin_area, origin_zone, origin_country, destination,
                            destination_area,
@@ -1011,7 +999,7 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
         {'carrier': {'$in': carrier_list}, 'OD': {'$in': OD_list},
          '$or': [{'effective_to': None}, {'effective_to': {'$gt': file_date}}]},
         no_cursor_timeout=True)
-    print cur.count()
+    # print cur.count()
 
     for i in cur:
 
@@ -1032,9 +1020,9 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
         rbd = i['RBD']
         compartment = i['compartment']
         try:
-
-            Reference_Rate = i['Reference_Rate']
-            if Reference_Rate == None:
+            
+            Reference_Rate=i['Reference_Rate']
+            if Reference_Rate==None:
                 continue
 
         except:
@@ -1049,32 +1037,22 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
         df_stage2 = df_stage1.loc[(
 
             # (df_stage1.RBD_198.isna()| df_stage1.RBD_198 ==  rbd) &
-                (
-                        (df_stage1.RBD_1 == rbd) | (df_stage1.RBD_2 == rbd) | (df_stage1.RBD_3 == rbd) | (
-                        (df_stage1.RBD_1 == '') & (df_stage1.RBD_2 == '') & (df_stage1.RBD_3 == ''))) &
-                (df_stage1.CABIN.isin([compartment, ''])) &
-                (df_stage1.RTN_TO_ORIG.isin([owrt, ''])))]
-        print df_stage2
-        print ('@@@@@@@@@@@@@@@@@@@')
-        print df_stage2[["SERVICE_FEE_AMOUNT", "RBD_1", "RBD_2", "RBD_3", "SEQ_NO",'SERVICE_TYPE_SUB_CODE']]
-        # print df_stage2[df_stage2['SERVICE_TYPE_SUB_CODE'] == 'I']
+            (
+                (df_stage1.RBD_1 == rbd) | (df_stage1.RBD_2 == rbd) | (df_stage1.RBD_3 == rbd) | (
+                    (df_stage1.RBD_1 == '') & (df_stage1.RBD_2 == '') & (df_stage1.RBD_3 == ''))) &
+            (df_stage1.CABIN.isin([compartment, ''])) &
+            (df_stage1.RTN_TO_ORIG.isin([owrt, ''])))]
+
         ###### create index on df_stage2
+
         checklist = []
         for index, j in df_stage2.iterrows():
 
             if j.get('RBD_198'):
                 if isinstance(j['RBD_198'], list) and rbd not in j['RBD_198']:
-                    # if j["SERVICE_FEE_AMOUNT"] == 8.0:
-                    #     print "!!!!!!!!"
-                    #     print j["SEQ_NO"]
                     continue
 
             if j['SERVICE_TYPE_TAX_CODE'] + j['SERVICE_TYPE_SUB_CODE'] in checklist:
-                if j["SERVICE_FEE_AMOUNT"] == 8.0:
-                    print "!!!!!!!!"
-                    print checklist
-                    print yqiseqno
-                    print j["SEQ_NO"]
                 continue
 
             match = 0
@@ -1088,43 +1066,35 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
                                                                                                    'FARE_CLASS_CODE'][
                                                                                                    l])):
                         match += 1
-                        print j['FARE_CLASS_TBL_171']['FARE_CLASS_CODE'][l] + " matched!!"
-
+                        # print j['FARE_CLASS_TBL_171']['FARE_CLASS_CODE'][l] + " matched!!"
                         break
                     else:
                         continue
 
+
+
             elif (j["FARE_BASIS_CODE"] == "" or wild_card_check(i['fare_basis'], j["FARE_BASIS_CODE"])):
+
                 match += 1
             else:
                 continue
 
             if match < 1:
                 continue
-            # if j["SERVICE_FEE_AMOUNT"] == 8.0:
-            #     print "!!!!!!!!"
-            #     print j["SEQ_NO"]
-            if j["SERVICE_FEE_PERCENT"] > 0.0:
 
+            if j["SERVICE_FEE_PERCENT"] > 0.0:
                 j["SERVICE_FEE_AMOUNT"] = (j["SERVICE_FEE_PERCENT"] * i['fare']) / 100
-                # if j["SERVICE_FEE_AMOUNT"] == 8.0:
-                #     print "!!!!!!!!"
-                #     print j["SEQ_NO"]
+
             elif j['SERVICE_FEE_CUR'] != i['currency']:
 
                 y_cur = j['SERVICE_FEE_AMOUNT'] * j["Reference_Rate"]
                 f_cur = i['Reference_Rate']
-                # if j["SERVICE_FEE_AMOUNT"] == 8.0:
-                #     print "!!!!!!!!"
-                #     print j["SEQ_NO"]
 
                 j["SERVICE_FEE_AMOUNT"] = y_cur / f_cur
             else:
-                # if j["SERVICE_FEE_AMOUNT"] == 8.0:
-                #     print "!!!!!!!!"
-                #     print j["SEQ_NO"]
                 pass
             # add service fee appl
+
 
             if ((j['SERVICE_FEE_APPL'] in ["", "1"]) and owrt == "Y"):
                 j["SERVICE_FEE_AMOUNT"] = j["SERVICE_FEE_AMOUNT"] * 2
@@ -1136,17 +1106,10 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
                 checklist.append("YQI")
                 yqiseqno.append(j['SEQ_NO'])
 
-
-                if j["SERVICE_FEE_AMOUNT"] == 8.0:
-                    print ("?????")
-                    print (j['SEQ_NO'])
-
-
             elif (j['SERVICE_TYPE_TAX_CODE'] == "YQ" and j['SERVICE_TYPE_SUB_CODE'] == "F"):
                 yqf = j["SERVICE_FEE_AMOUNT"]
                 checklist.append("YQF")
                 yqfseqno.append(j['SEQ_NO'])
-                # print (j['SEQ_NO'])
 
             elif (j['SERVICE_TYPE_TAX_CODE'] == "YR" and j['SERVICE_TYPE_SUB_CODE'] == "I"):
                 yri = j["SERVICE_FEE_AMOUNT"]
@@ -1158,30 +1121,25 @@ def yqyr_p2p(system_date, file_date, filedate, carrier_list, OD_list, origin, or
                 checklist.append("YRF")
                 yrfseqno.append(j['SEQ_NO'])
 
-        print (yqi, yqf, yri, yrf)
+        # print (yqi, yqf, yri, yrf)
 
         YQ = yqi + yqf
         YR = yri + yrf
         YQYR_SEQ_NO = [yqiseqno, yqfseqno, yriseqno, yrfseqno]
         YQ_flag = 9
-        YQI1=yqi
-        YQF1=yqf
-        YRI2=yri
-        YRF2=yrf
+        # print YQYR_SEQ_NO
 
-
-        if yqf == 184.0:
-            print [yqi,yqf,YQ, YR, YQYR_SEQ_NO[0], YQYR_SEQ_NO[1], YQYR_SEQ_NO[2], YQYR_SEQ_NO[3], YQ_flag]
-        # coll.update({"_id": i["_id"]}, {
-        #     '$set': {'YQ': YQ, 'YR': YR, 'YQI_seqno': YQYR_SEQ_NO[0], 'YQF_seqno': YQYR_SEQ_NO[1],"YQI":YQI1,"YQF":YQF1,"YRI":YRI2,"YRF":YRF2,
-        #              'YRI_seqno': YQYR_SEQ_NO[2], 'YRF_seqno': YQYR_SEQ_NO[3], 'YQ_flag': YQ_flag}})
+        print [YQ, YR, YQYR_SEQ_NO[0], YQYR_SEQ_NO[1], YQYR_SEQ_NO[2], YQYR_SEQ_NO[3], YQ_flag]
+        coll.update({"_id": i["_id"]}, {
+            '$set': {'YQ': YQ, 'YR': YR, 'YQI_seqno': YQYR_SEQ_NO[0], 'YQF_seqno': YQYR_SEQ_NO[1],
+                     'YRI_seqno': YQYR_SEQ_NO[2], 'YRF_seqno': YQYR_SEQ_NO[3], 'YQ_flag': YQ_flag}})
         print ("p2pe-->", time.time() - sta)
 
 
 # @measure(JUPITER_LOGGER)
-def yqyr_complete_main(system_date, carrier_list, OD_list, hub, hub_area, hub_country, hub_zone, origin_area,
-                       origin_country,
-                       origin_zone, destination_area, destination_country, destination_zone, client):
+def yqyr_complete_main(system_date, carrier_list, OD_list, hub, hub_area, hub_country, hub_zone, origin_area, origin_country,
+              origin_zone, destination_area, destination_country, destination_zone,  client):
+
     origin = OD_list[0][:3]
     destination = OD_list[0][3:]
     file_date = system_date
@@ -1212,18 +1170,18 @@ if __name__ == '__main__':
     db_ATPCO = client[ATPCO_DB]
     db_fzDB = client[JUPITER_DB]
 
-    coll = db_fzDB.Temp_fzDB_tbl_006
+    coll = db_fzDB.JUP_DB_ATPCO_Fares_Rules
     hubc = db_fzDB.JUP_DB_Carrier_hubs
     exr = db_fzDB.JUP_DB_Exchange_Rate
 
-    system_date = "2020-02-09"
-    cxr = ["EK"]
+    system_date = "2019-03-03"
+    cxr = ["FZ"]
 
     for i in cxr:
         od_list.update({i: []})
         cod = coll.distinct('OD', {'carrier': i})
         od_list[i] = cod
-        od_list[i] = ["LOSDXB"]
+        od_list[i] = ["PRGDXB"]
 
     carrier_od = []
     for carrier in list(od_list.keys()):
@@ -1250,9 +1208,8 @@ if __name__ == '__main__':
                     destination_country = j["CITY_CNTRY"]
 
             print (system_date, [carrier], [OD], hub, hub_area, hub_country, hub_zone, origin_area,
-                   origin_country, origin_zone, destination_area, destination_country, destination_zone)
+                      origin_country, origin_zone, destination_area, destination_country, destination_zone)
             yqyr_complete_main(system_date, [carrier], [OD], hub, hub_area, hub_country, hub_zone, origin_area,
-                               origin_country, origin_zone, destination_area, destination_country, destination_zone,
-                               client)
+                      origin_country, origin_zone, destination_area, destination_country, destination_zone,client)
 
     print ("END-->", time.time() - st)

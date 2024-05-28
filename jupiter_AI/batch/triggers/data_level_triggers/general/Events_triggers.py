@@ -498,37 +498,85 @@ def run(markets, db):
 if __name__ == '__main__':
     client = mongo_client()
     db=client[JUPITER_DB]
-    markets = [[
-        "TYOTYODELY", "TYOTYOBLRY", "TYOTYOMELY", "TYOTYOPUSY", "TYOTYOSYDY"]]
-
+    markets = ['CMBDXBCMBY',
+                     'CMBDXBCMBJ',
+                     'CMBCMBDXBY',
+                     'CMBCMBDXBJ',
+                     'CMBMLEAMMY',
+                     'CMBMLEAMMJ',
+                     'AMMAMMDXBY',
+                     'AMMAMMDXBJ',
+                     'AMMDXBAMMY',
+                     'AMMDXBAMMJ',
+                     'AMMDACAMMY',
+                     'AMMDACAMMJ',
+                     'AMMAMMDXBY',
+                     'AMMAMMDXBJ',
+                     'CGPDXBCGPY',
+                     'CGPDXBCGPJ',
+                     'CGPEBBCGPY',
+                     'CGPEBBCGPJ',
+                     'CGPSLLDACY',
+                     'CGPSLLDACJ',
+                     'UAEKTMDXBY',
+                     'UAEKTMDXBJ',
+                     'UAEDACDXBY',
+                     'UAEDACDXBJ',
+                     'UAECGPDXBY',
+                     'UAECGPDXBJ',
+                     'CMBCMBKWIY',
+                     'CMBCMBKWIJ',
+                     'PZUPZUDXBY',
+                     'PZUPZUDXBJ',
+                     'BAHBAHDXBY',
+                     'BAHBAHDXBJ',
+                     'UAEDXBVKOY',
+                     'UAEDXBVKOJ',
+                     'UAEDXBGYDY',
+                     'UAEDXBGYDJ',
+                     'BAHMHDBAHY',
+                     'BAHMHDBAHJ',
+                     'BAHNJFBAHY',
+                     'BAHNJFBAHJ',
+                     'BAHBAHNJFY',
+                     'BAHBAHNJFJ',
+                     'RUHKTMRUHY',
+                     'RUHKTMRUHJ',
+                     'RUHKTMAHBY',
+                     'RUHKTMAHBJ',
+                     'RUHKTMELQY',
+                     'RUHKTMELQJ',
+                     'KWIBOMKWIY',
+                     'KWIBOMKWIJ',
+                     'UAETBSDXBY', 'UAETBSDXBJ']
     run(markets=markets, db=db)
 
     # TEMPORARY BLOCK TO CLEAR WORKFLOW AND WORKFLOW_OD_USER
-    # import sys
-    # client.close()
-    # sys.exit()
-    # st = time.time()
-    # print "Running Data Level Triggers"
-    # online_mrkts = db.JUP_DB_Market_Significance.aggregate([
-    #     {"$match": {"online": True}},
-    #     {"$sort": {"rank": -1}},
-    #     {"$group": {"_id": {"market": "$market"}}},
-    #     {"$project": {"_id": 0, "market": "$_id.market"}}])
-    #
-    # online_mrkts = list(online_mrkts)
-    #
-    # counter = 0
-    # trigger_group = []
-    # markets = []
-    # for mrkt in online_mrkts:
-    #     if counter == 100:
-    #         run(db=db, markets=markets)
-    #         markets.append(mrkt['market'])
-    #         counter = 1
-    #     else:
-    #         markets.append(mrkt['market'])
-    #         counter += 1
-    # if counter > 0:
-    #     run(db=db, markets=markets)
-    # print 'Total Time Taken', time.time() - st
-    # client.close()
+    import sys
+    client.close()
+    sys.exit()
+    st = time.time()
+    print "Running Data Level Triggers"
+    online_mrkts = db.JUP_DB_Market_Significance.aggregate([
+        {"$match": {"online": True}},
+        {"$sort": {"rank": -1}},
+        {"$group": {"_id": {"market": "$market"}}},
+        {"$project": {"_id": 0, "market": "$_id.market"}}])
+
+    online_mrkts = list(online_mrkts)
+
+    counter = 0
+    trigger_group = []
+    markets = []
+    for mrkt in online_mrkts:
+        if counter == 100:
+            run(db=db, markets=markets)
+            markets.append(mrkt['market'])
+            counter = 1
+        else:
+            markets.append(mrkt['market'])
+            counter += 1
+    if counter > 0:
+        run(db=db, markets=markets)
+    print 'Total Time Taken', time.time() - st
+    client.close()

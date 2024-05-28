@@ -73,7 +73,7 @@ def main(pos,snap_date,doc,client):
     Bulk_summary = db.JUP_DB_Manual_Triggers_Module_Summary.initialize_unordered_bulk_op()
     str_date = snap_date
     print pos ,str_date
-    cursor = db.JUP_DB_Target_OD_1.find({'pos':pos,'snap_date': str_date, 'month': {"$in":[this_month-1,this_month, next_month,next_month + 1]}},no_cursor_timeout=True)
+    cursor = db.JUP_DB_Target_OD.find({'pos':pos,'snap_date': str_date, 'month': {"$in":[this_month-1,this_month, next_month,next_month + 1]}},no_cursor_timeout=True)
     for x in cursor:
         combine_column  = "M"+str(int(x['departureMonth'][0:4]))+""+str(int(x['departureMonth'][4:6]));
         duration = doc[combine_column];
@@ -192,14 +192,12 @@ def main(pos,snap_date,doc,client):
 
 if __name__ == '__main__':
     db = client[JUPITER_DB]
-    doc = db.JUP_DB_Target_OD_1.distinct('snap_date')
+    doc = db.JUP_DB_Target_OD.distinct('snap_date')
     str_date = doc[len(doc) - 1]
-    print str_date
     pos_list = list(db.JUP_DB_Target_OD.distinct('pos', {'snap_date': str_date}))
     doc_1 = dict()
     cal_cursor = db.JUP_DB_Calendar_Master.find({'duration' : {'$ne' : None}})
     for x in cal_cursor:
         doc_1[x['combine_column']] =  x['duration']
-        print doc_1
     for pos in pos_list:
         main(pos,str_date,doc_1,client)

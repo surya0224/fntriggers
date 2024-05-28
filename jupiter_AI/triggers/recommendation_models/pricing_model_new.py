@@ -34,7 +34,7 @@ def get_pricing_models(pos, origin, destination, compartment, db):
             }
         }
     ])
-    print list(pos_cursor)
+    # print list(pos_cursor)
 
     pos_list = (list(pos_cursor)[0]).values()
 
@@ -104,7 +104,7 @@ def get_pricing_models(pos, origin, destination, compartment, db):
     ])
     # print list(pricing_models_cursor)
     pricing_models = list(pricing_models_cursor)[0]['model']
-    print pricing_models
+    # print pricing_models
     return pricing_models
 
 

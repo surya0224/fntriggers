@@ -59,9 +59,7 @@ def main(client, ods):
     str_date_1wkLTR = str(year_1wkLTR) + '-' + str(month_1wkLTR) + '-' + str(date_1wkLTR)
     print str_date, str_date_1wkLTR
     MPF_pipeline = [
-    # {"$match": {
-    #     "snap_date": {'$gte': "2020-06-14", '$lte': str_date}, "od" : {"$in" : ods}}},
-
+    {"$match": {"snap_date": {'$gte': str_date_1wkLTR, '$lte': str_date}, "od" : {"$in" : ods}}},
     {'$sort': {'pos': 1, 'od': 1, 'carrier': 1, 'compartment': 1, 'outbound_departure_date': 1, 'is_one_way': 1, 'observation_date': -1, 'observation_time': -1}},
     {'$group': {'_id': {'pos': '$pos', 'od': '$od', 'carrier': '$carrier', 'is_one_way': '$is_one_way', 'compartment': '$compartment',
                         'outbound_travel_stop_over': 'outbound_travel_stop_over',
@@ -306,8 +304,6 @@ def main(client, ods):
     }}
     ]
     cursor = db.JUP_DB_Infare.aggregate(MPF_pipeline, allowDiskUse = True)
-    # for i in cursor:
-    #     print i
 
 
     # update temp table data to Manual trigger table x
@@ -316,15 +312,15 @@ def main(client, ods):
     BulkSummary = db.JUP_DB_Manual_Triggers_Module_Summary.initialize_unordered_bulk_op()
     #cursor = db.Temp_MPF.find(no_cursor_timeout=True)
     for x in cursor:
-        print x['outbound_departure_date'],x['pos'], x['od'],x['compartment']
+        # print x
         dep_date_ISO = datetime.strptime(x['outbound_departure_date'], '%Y-%m-%d')
 
         Bulk.find({
             'dep_date': x['outbound_departure_date'],
-            # 'dep_date_ISO': dep_date_ISO,
-            #   'trx_date': str_date,
-            # 'pos.Country': x['pos'],
-            'od': x['od'],
+            'dep_date_ISO': dep_date_ISO,
+            'trx_date': str_date,
+            'pos.Country': x['pos'],
+            'psuedo_od': x['od'],
             'compartment.compartment': x['compartment'],
 
         }).update(
@@ -340,8 +336,8 @@ def main(client, ods):
         BulkSummary.find({
 
             'dep_date': x['outbound_departure_date'],
-             # 'pos.Country': x['pos'],
-            'od': x['od'],
+            'pos.Country': x['pos'],
+            'psuedo_od': x['od'],
             'compartment': x['compartment'],
 
         }).update(
@@ -366,28 +362,9 @@ def main(client, ods):
 if __name__ == '__main__':
     db = client[JUPITER_DB]
     od_list = list(db.JUP_DB_OD_Master.distinct('pseudo_od'))
-    main(client, od_list)
-    main(client,
-        [
-            "DELYVR",
-"DELYOW",
-"DELYYC",
-"DELYTO",
-"DELTPE",
-"DELSAL",
-"DELJED",
-"DELBOG",
-"DELYHZ",
-"DELYMQ",
-"DELWAS",
-"DELYYZ",
-"DELMNL",
-"DELEWR",
-"DELSFO",
-"DELJFK",
-"DELJKT",
-"DELTYO",
-"DELCHI",
-"DELKUL"
-    ]
-    )
+    # main(client, od_list)
+    main(client, [
+        "CMBAMM",
+        "GYDUAE",
+
+    ])
